@@ -19,6 +19,8 @@ import com.weavewhisper.services.CustomerService;
 import com.weavewhisper.services.ManufacturerService;
 import com.weavewhisper.services.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -33,7 +35,7 @@ public class UserController {
 	public UserService userService;
 
 	@PostMapping("/sign-up")
-	public ResponseEntity<?> registerUser(@RequestBody RegisterUserDto user) {		
+	public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterUserDto user) {		
 		if (user.getType().equals(UserType.CUSTOMER)) {
 			customerService.registerCustomer(user);
 		} else if (user.getType().equals(UserType.MANUFACTURER)) {
@@ -43,7 +45,7 @@ public class UserController {
 	}
 
 	@PostMapping("/sign-in")
-	public ResponseEntity<?> loginUser(@RequestBody AuthDto authDto) {
+	public ResponseEntity<?> loginUser(@RequestBody @Valid AuthDto authDto) {
 		System.out.println(authDto);
 		UserResponseDto userResponseDto = userService.loginUser(authDto.getEmail(), authDto.getPassword());
 		System.out.println(userResponseDto);

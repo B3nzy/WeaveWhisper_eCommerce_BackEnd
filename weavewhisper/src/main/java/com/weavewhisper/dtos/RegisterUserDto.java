@@ -13,6 +13,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class RegisterUserDto {
+
 	private String email;
 	private String password;
 	private UserType type;

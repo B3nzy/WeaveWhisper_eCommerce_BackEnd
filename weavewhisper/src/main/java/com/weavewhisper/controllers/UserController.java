@@ -33,7 +33,7 @@ public class UserController {
 	public UserService userService;
 
 	@PostMapping("/sign-up")
-	public ResponseEntity<?> registerUser(@RequestBody RegisterUserDto user) {
+	public ResponseEntity<?> registerUser(@RequestBody RegisterUserDto user) {		
 		if (user.getType().equals(UserType.CUSTOMER)) {
 			customerService.registerCustomer(user);
 		} else if (user.getType().equals(UserType.MANUFACTURER)) {

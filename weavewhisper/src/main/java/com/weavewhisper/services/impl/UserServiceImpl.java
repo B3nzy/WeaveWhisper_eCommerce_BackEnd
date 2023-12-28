@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
+import com.weavewhisper.dtos.AuthDto;
 import com.weavewhisper.dtos.UserResponseDto;
 import com.weavewhisper.entities.BaseUser;
 import com.weavewhisper.repositories.UserDao;
@@ -23,8 +24,8 @@ public class UserServiceImpl implements UserService {
 	private ModelMapper modelMapper;
 
 	@Override
-	public UserResponseDto loginUser(String email, String password) {
-		BaseUser user = userDao.findByEmailAndPassword(email, password);
+	public UserResponseDto loginUser(AuthDto authDto) {
+		BaseUser user = userDao.findByEmailAndPassword(authDto.getEmail(), authDto.getPassword());
 		
 		if (user != null) {
 			return modelMapper.map(user, UserResponseDto.class);

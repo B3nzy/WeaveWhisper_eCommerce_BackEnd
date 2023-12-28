@@ -30,7 +30,6 @@ public class GlobalExceptionHandler {
 			String message = error.getDefaultMessage();
 			hashMap.put(fieldName, message);
 		});
-
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hashMap);
 	}
 

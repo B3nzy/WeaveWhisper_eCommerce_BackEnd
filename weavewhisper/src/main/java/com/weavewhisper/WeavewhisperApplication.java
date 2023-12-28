@@ -14,7 +14,7 @@ public class WeavewhisperApplication {
 		SpringApplication.run(WeavewhisperApplication.class, args);
 	}
 
-	@Bean // equivalent to <bean id ..../> in xml file
+	@Bean
 	public ModelMapper modelMapper() {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT)

@@ -47,7 +47,7 @@ public class UserController {
 	@PostMapping("/sign-in")
 	public ResponseEntity<?> loginUser(@RequestBody @Valid AuthDto authDto) {
 		System.out.println(authDto);
-		UserResponseDto userResponseDto = userService.loginUser(authDto.getEmail(), authDto.getPassword());
+		UserResponseDto userResponseDto = userService.loginUser(authDto);
 		System.out.println(userResponseDto);
 		return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
 	}

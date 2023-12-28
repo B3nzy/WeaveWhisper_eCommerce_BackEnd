@@ -23,6 +23,8 @@ public class Manufacturer extends BaseUser {
 	private String brandName;
 	@Column(length = 50, nullable = false, unique = true)
 	private String panNumber;
+	
+	
 
 	public Manufacturer(String email, String password, UserType type, String brandName, String panNumber) {
 		super(email, password, type);

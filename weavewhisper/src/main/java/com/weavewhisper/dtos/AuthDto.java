@@ -16,5 +16,4 @@ public class AuthDto {
 	private String email;
 	@NotBlank
 	private String password;
-//	private UserType type;
 }

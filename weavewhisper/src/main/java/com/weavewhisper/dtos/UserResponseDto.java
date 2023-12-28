@@ -10,11 +10,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public class UserResponseDto {
+	private Long id;
 	private String email;
 	private UserType type;
 	private String fullName;
 	private String phoneNumber;
 	private String address;
 	private String brandName;
-	private String panNumber;
 }

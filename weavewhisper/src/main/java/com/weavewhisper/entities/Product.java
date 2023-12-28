@@ -62,10 +62,10 @@ public class Product extends BaseEntity {
 	private CategoryType category;
 
 	@OneToMany(mappedBy = "productRef", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<ProductSize> sizeMap = new HashSet<>();
+	private Set<ProductSize> sizeSet = new HashSet<>();
 
 	@OneToMany(mappedBy = "productRef", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<ProductColor> colorMap = new HashSet<>();
+	private Set<ProductColor> colorSet = new HashSet<>();
 
 	public Product(String name, String description, Double actualPrice, Double sellingPrice, GenderType gender,
 			CategoryType category) {
@@ -79,22 +79,22 @@ public class Product extends BaseEntity {
 	}
 
 	public void addSize(ProductSize size) {
-		sizeMap.add(size);
+		sizeSet.add(size);
 		size.setProductRef(this);
 	}
 
 	public void removeSize(ProductSize size) {
-		sizeMap.remove(size);
+		sizeSet.remove(size);
 		size.setProductRef(null);
 	}
 
 	public void addColor(ProductColor color) {
-		colorMap.add(color);
+		colorSet.add(color);
 		color.setProductRef(this);
 	}
 
 	public void removeColor(ProductColor color) {
-		colorMap.remove(color);
+		colorSet.remove(color);
 		color.setProductRef(null);
 	}
 

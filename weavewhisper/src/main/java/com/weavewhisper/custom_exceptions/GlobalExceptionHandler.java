@@ -3,6 +3,7 @@ package com.weavewhisper.custom_exceptions;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +18,12 @@ import com.weavewhisper.dtos.ApiResponse;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<ApiResponse> resourceNotFoundExceptionHandler(ResourceNotFoundException e) {
+	public ResponseEntity<ApiResponse> handleResourceNotFoundException(ResourceNotFoundException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+	public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		Map<String, String> hashMap = new HashMap<>();
 
 		e.getBindingResult().getAllErrors().forEach(error -> {
@@ -31,6 +32,11 @@ public class GlobalExceptionHandler {
 			hashMap.put(fieldName, message);
 		});
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hashMap);
+	}
+	
+	@ExceptionHandler(IncorrectResultSizeDataAccessException.class)
+	private ResponseEntity<?> handleIncorrectResultSizeDataAccessException(IncorrectResultSizeDataAccessException e){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
 	}
 
 }

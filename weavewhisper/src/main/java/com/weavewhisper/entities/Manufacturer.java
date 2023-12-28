@@ -1,9 +1,14 @@
 package com.weavewhisper.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.weavewhisper.enums.UserType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -23,13 +28,24 @@ public class Manufacturer extends BaseUser {
 	private String brandName;
 	@Column(length = 50, nullable = false, unique = true)
 	private String panNumber;
-	
-	
+
+	@OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL, orphanRemoval = true)
+	List<Product> productList = new ArrayList<>();
 
 	public Manufacturer(String email, String password, UserType type, String brandName, String panNumber) {
 		super(email, password, type);
 		this.brandName = brandName;
 		this.panNumber = panNumber;
+	}
+	
+	public void addProduct(Product product) {
+		productList.add(product);
+		product.setManufacturer(this);
+	}
+	
+	public void removeProduct(Product product) {
+		productList.remove(product);
+		product.setManufacturer(null);
 	}
 
 }

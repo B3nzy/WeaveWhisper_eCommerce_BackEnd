@@ -1,7 +1,7 @@
 package com.weavewhisper.entities;
 
-import java.util.*;
-import org.hibernate.resource.beans.internal.FallbackBeanInstanceProducer;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.weavewhisper.enums.CategoryType;
 import com.weavewhisper.enums.GenderType;
@@ -11,9 +11,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,7 +45,7 @@ import lombok.ToString;
 @ToString(callSuper = true, exclude = { "sizeMap", "colorMap" })
 public class Product extends BaseEntity {
 
-	@Column(nullable = false)
+	@Column(nullable = false,unique = true)
 	private String name;
 	@Column(nullable = false, length = 1000)
 	private String description;
@@ -60,6 +61,10 @@ public class Product extends BaseEntity {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private CategoryType category;
+
+	@ManyToOne
+	@JoinColumn(name = "manufacture_id", nullable = false)
+	private Manufacturer manufacturer;
 
 	@OneToMany(mappedBy = "productRef", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ProductSize> sizeSet = new HashSet<>();

@@ -1,9 +1,6 @@
 package com.weavewhisper.services.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -11,15 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
-import com.weavewhisper.dtos.ApiResponse;
+import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
-import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
+import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.Product;
 import com.weavewhisper.entities.ProductColor;
 import com.weavewhisper.entities.ProductSize;
 import com.weavewhisper.enums.ColorType;
 import com.weavewhisper.enums.SizeType;
+import com.weavewhisper.repositories.ManufacturerDao;
 import com.weavewhisper.repositories.ProductDao;
 import com.weavewhisper.services.ProductService;
 
@@ -35,8 +33,15 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private ProductDao productDao;
 
+	@Autowired
+	private ManufacturerDao manufacturerDao;
+
 	@Override
 	public ProductCreatedApiResponseDto addProduct(ProductRequestDto productRequestDto) {
+
+		Manufacturer manufacturer = manufacturerDao.findById(productRequestDto.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("No user found with that user id"));
+
 		Product product = modelMapper.map(productRequestDto, Product.class);
 		System.out.println(productRequestDto);
 		System.out.println(product);
@@ -54,7 +59,9 @@ public class ProductServiceImpl implements ProductService {
 			product.addColor(new ProductColor(ColorType.valueOf(colorList.get(i))));
 		}
 
-		Product savedProduct = productDao.saveAndFlush(product);
+		manufacturer.addProduct(product);
+
+		Product savedProduct = productDao.findByName(product.getName());
 
 		return new ProductCreatedApiResponseDto(savedProduct.getId(), true, "Product added successfully!");
 	}
@@ -69,6 +76,8 @@ public class ProductServiceImpl implements ProductService {
 				.setColors(product.getColorSet().stream().map(s -> s.getColor().name()).collect(Collectors.toSet()));
 		productResponseDto
 				.setSizes(product.getSizeSet().stream().map(s -> s.getSize().name()).collect(Collectors.toSet()));
+		
+		productResponseDto.setBrandName(product.getManufacturer().getBrandName());
 
 		return productResponseDto;
 	}

@@ -20,6 +20,7 @@ public class ProductResponseDto {
 	private double actualPrice;
 	private double sellingPrice;
 	private int inventoryCount;
+	private String brandName;
 	private GenderType gender;
 	private CategoryType category;
 //	private ArrayList<String> imageUrls;

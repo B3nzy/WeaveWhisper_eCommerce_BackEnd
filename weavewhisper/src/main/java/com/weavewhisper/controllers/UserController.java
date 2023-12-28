@@ -1,10 +1,12 @@
 package com.weavewhisper.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.AuthDto;
+import com.weavewhisper.dtos.ProductShortResponseDto;
 import com.weavewhisper.dtos.RegisterUserDto;
 import com.weavewhisper.dtos.UserResponseDto;
-import com.weavewhisper.entities.BaseUser;
 import com.weavewhisper.enums.UserType;
 import com.weavewhisper.services.CustomerService;
 import com.weavewhisper.services.ManufacturerService;
@@ -58,5 +60,11 @@ public class UserController {
 	public ResponseEntity<?> deleteManufacturer(@PathVariable Long manudacturerId) {
 		ApiResponse apiRes = manufacturerService.deleteManufacturer(manudacturerId);
 		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
+	}
+
+	@GetMapping("/products/manufacturer/{manufacturerId}")
+	public ResponseEntity<?> getProductForSpecificManufacturer(@PathVariable Long manufacturerId) {
+		List<ProductShortResponseDto> productShortResponseDto = manufacturerService.getAllProducts(manufacturerId);
+		return ResponseEntity.status(HttpStatus.OK).body(productShortResponseDto);
 	}
 }

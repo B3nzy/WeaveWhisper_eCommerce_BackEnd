@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
+import com.weavewhisper.dtos.ProductShortResponseDto;
 import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.services.ProductService;
 
@@ -34,4 +35,5 @@ public class ProductController {
 		ProductResponseDto 	productResponseDto = productService.getSingleProduct(productId);
 		return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
 	}
+	
 }

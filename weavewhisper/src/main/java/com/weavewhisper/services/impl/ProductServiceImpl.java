@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
+import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
@@ -76,10 +77,20 @@ public class ProductServiceImpl implements ProductService {
 				.setColors(product.getColorSet().stream().map(s -> s.getColor().name()).collect(Collectors.toSet()));
 		productResponseDto
 				.setSizes(product.getSizeSet().stream().map(s -> s.getSize().name()).collect(Collectors.toSet()));
-		
+
 		productResponseDto.setBrandName(product.getManufacturer().getBrandName());
 
 		return productResponseDto;
+	}
+
+	@Override
+	public ApiResponse deleteSingleProduct(Long productId) {
+		if (productDao.existsById(productId)) {
+			productDao.deleteById(productId);
+		} else {
+			throw new ResourceNotFoundException("No such profuct found with that product id");
+		}
+		return new ApiResponse(true, "Product deleted successfully");
 	}
 
 }

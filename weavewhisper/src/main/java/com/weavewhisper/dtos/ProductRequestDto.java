@@ -17,6 +17,7 @@ import lombok.ToString;
 @ToString
 public class ProductRequestDto {
 	private Long userId;
+	private Long productId;
 	private String name;
 	private String description;
 	private double actualPrice;

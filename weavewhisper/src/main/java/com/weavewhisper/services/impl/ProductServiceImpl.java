@@ -93,4 +93,22 @@ public class ProductServiceImpl implements ProductService {
 		return new ApiResponse(true, "Product deleted successfully");
 	}
 
+	@Override
+	public ApiResponse updateProduct(ProductRequestDto productRequestDto) {
+		Manufacturer manufacturer = manufacturerDao.findById(productRequestDto.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such manufacturer found with that id!"));
+
+		
+		manufacturer.getProductList().forEach(p->{
+			if(p.getId() == productRequestDto.getProductId()) {
+				p.setActualPrice(productRequestDto.getActualPrice());
+				p.setSellingPrice(productRequestDto.getSellingPrice());
+				p.setInventoryCount(productRequestDto.getInventoryCount());
+				p.setDescription(productRequestDto.getDescription());
+			}
+		});
+		
+		return new ApiResponse(true, "Product updated successfully");
+	}
+
 }

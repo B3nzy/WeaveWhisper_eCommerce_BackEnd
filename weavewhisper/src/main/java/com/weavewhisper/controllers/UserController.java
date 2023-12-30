@@ -42,10 +42,12 @@ public class UserController {
 	public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterUserDto user) {
 		if (user.getType().equals(UserType.CUSTOMER)) {
 			customerService.registerCustomer(user);
+			return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Customer registered successfully!"));
 		} else if (user.getType().equals(UserType.MANUFACTURER)) {
 			manufacturerService.registerManufacturer(user);
+			return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Manufacturer registered successfully!"));
 		}
-		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Successfully created the user!"));
+		return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "User registered successfully!"));
 	}
 
 	@PostMapping("/sign-in")

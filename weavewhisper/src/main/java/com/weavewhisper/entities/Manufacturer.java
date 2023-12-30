@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@PrimaryKeyJoinColumn(name = "emp_id")
+@PrimaryKeyJoinColumn(name = "user_id")
 @Entity
 @Table(name = "manufaturers")
 @Getter
@@ -29,7 +29,7 @@ public class Manufacturer extends BaseUser {
 	@Column(length = 50, nullable = false, unique = true)
 	private String panNumber;
 
-	@OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL, orphanRemoval = false)
 	List<Product> productList = new ArrayList<>();
 
 	public Manufacturer(String email, String password, UserType type, String brandName, String panNumber) {

@@ -1,6 +1,7 @@
 package com.weavewhisper.services.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -98,17 +99,41 @@ public class ProductServiceImpl implements ProductService {
 		Manufacturer manufacturer = manufacturerDao.findById(productRequestDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("No such manufacturer found with that id!"));
 
-		
-		manufacturer.getProductList().forEach(p->{
-			if(p.getId() == productRequestDto.getProductId()) {
+		manufacturer.getProductList().forEach(p -> {
+			if (p.getId() == productRequestDto.getProductId()) {
 				p.setActualPrice(productRequestDto.getActualPrice());
 				p.setSellingPrice(productRequestDto.getSellingPrice());
 				p.setInventoryCount(productRequestDto.getInventoryCount());
 				p.setDescription(productRequestDto.getDescription());
 			}
 		});
-		
+
 		return new ApiResponse(true, "Product updated successfully");
+	}
+
+	@Override
+	public List<ProductResponseDto> getAllProducts() {
+
+		List<Product> productList = productDao.findAll();
+
+		List<ProductResponseDto> productResDtoList = new ArrayList<>();
+
+		for (int i = 0; i < productList.size(); i++) {
+
+			Product product = productList.get(i);
+
+			ProductResponseDto productResponseDto = modelMapper.map(product, ProductResponseDto.class);
+			productResponseDto.setColors(
+					product.getColorSet().stream().map(s -> s.getColor().name()).collect(Collectors.toSet()));
+			productResponseDto
+					.setSizes(product.getSizeSet().stream().map(s -> s.getSize().name()).collect(Collectors.toSet()));
+
+			productResponseDto.setBrandName(product.getManufacturer().getBrandName());
+
+			productResDtoList.add(productResponseDto);
+		}
+
+		return productResDtoList;
 	}
 
 }

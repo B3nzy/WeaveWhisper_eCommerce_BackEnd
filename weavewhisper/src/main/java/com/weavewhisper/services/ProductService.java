@@ -1,5 +1,7 @@
 package com.weavewhisper.services;
 
+import java.util.List;
+
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
@@ -10,4 +12,5 @@ public interface ProductService {
 	ProductResponseDto getSingleProduct(Long productId);
 	ApiResponse deleteSingleProduct(Long productId);
 	ApiResponse updateProduct(ProductRequestDto productRequestDto);
+	List<ProductResponseDto> getAllProducts();
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@PrimaryKeyJoinColumn(name = "emp_id")
+@PrimaryKeyJoinColumn(name = "user_id")
 @Entity
 @Table(name = "customers")
 @Getter

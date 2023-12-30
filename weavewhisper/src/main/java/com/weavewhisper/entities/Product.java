@@ -63,7 +63,7 @@ public class Product extends BaseEntity {
 	private CategoryType category;
 
 	@ManyToOne
-	@JoinColumn(name = "manufacture_id", nullable = false)
+	@JoinColumn(name = "manufacture_id")
 	private Manufacturer manufacturer;
 
 	@OneToMany(mappedBy = "productRef", cascade = CascadeType.ALL, orphanRemoval = true)

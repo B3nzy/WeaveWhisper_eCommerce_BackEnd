@@ -29,7 +29,7 @@ public class Manufacturer extends BaseUser {
 	@Column(length = 50, nullable = false, unique = true)
 	private String panNumber;
 
-	@OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL, orphanRemoval = false)
+	@OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL)
 	List<Product> productList = new ArrayList<>();
 
 	public Manufacturer(String email, String password, UserType type, String brandName, String panNumber) {
@@ -44,7 +44,7 @@ public class Manufacturer extends BaseUser {
 	}
 	
 	public void removeProduct(Product product) {
-		productList.remove(product);
+		product.setInventoryCount(0);
 		product.setManufacturer(null);
 	}
 

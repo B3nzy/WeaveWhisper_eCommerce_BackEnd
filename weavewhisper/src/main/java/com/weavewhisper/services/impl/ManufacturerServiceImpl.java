@@ -39,29 +39,40 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 	}
 
 	@Override
+	public ApiResponse deleteManufacturerListings(Long manufacturerId) {
+		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No Manufacturer found with that id"));
+
+		manufacturer.getProductList().forEach((p)->{
+			manufacturer.removeProduct(p);
+		});
+		
+		return new ApiResponse(true, "Deleted all listings of the manufacturer successfully!");
+	}
+	
+	@Override
 	public ApiResponse deleteManufacturer(Long manufacturerId) {
-		if (manufacturerDao.existsById(manufacturerId)) {
-			manufacturerDao.deleteById(manufacturerId);
-			return new ApiResponse(true, "Manufacturer deleted successfully!");
-		} else {
-			throw new ResourceNotFoundException("No Manufacturer found with that id");
-		}
+		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No Manufacturer found with that id"));
+		
+		manufacturerDao.deleteById(manufacturerId);
+		return new ApiResponse(true, "Manufacturer deleted successfully!");
 	}
 
 	@Override
 	public List<ProductShortResponseDto> getAllProducts(Long manufacturerId) {
-		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId).orElseThrow(()-> new ResourceNotFoundException("No manufacture found with that id"));
-		
+		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No manufacture found with that id"));
+
 		List<ProductShortResponseDto> productResDto = new ArrayList<>();
-		
-		 manufacturer.getProductList().stream().forEach(p->{
-			 ProductShortResponseDto productShortResponseDto = modelMapper.map(p, ProductShortResponseDto.class);
-			 // Need to add the image here later;
+
+		manufacturer.getProductList().stream().forEach(p -> {
+			ProductShortResponseDto productShortResponseDto = modelMapper.map(p, ProductShortResponseDto.class);
+			// Need to add the image here later;
 //			 productShortResponseDto.setImageUrl();
-			 productResDto.add(productShortResponseDto);
-		 });
-	
-				
+			productResDto.add(productShortResponseDto);
+		});
+
 		return productResDto;
 	}
 

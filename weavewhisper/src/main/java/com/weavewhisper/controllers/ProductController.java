@@ -54,9 +54,9 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
 	}
 
-	@DeleteMapping("/delete/{productId}")
-	public ResponseEntity<?> deleteProductById(@PathVariable Long productId) {
-		ApiResponse apiRes = productService.deleteSingleProduct(productId);
+	@DeleteMapping("/delete/{productId}/manufacturer/{manufacturerId}")
+	public ResponseEntity<?> deleteProductById(@PathVariable Long productId, @PathVariable Long manufacturerId) {
+		ApiResponse apiRes = productService.deleteSingleProduct(productId, manufacturerId);
 		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
 	}
 

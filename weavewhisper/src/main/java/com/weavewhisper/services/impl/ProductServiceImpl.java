@@ -72,6 +72,9 @@ public class ProductServiceImpl implements ProductService {
 	public ProductResponseDto getSingleProduct(Long productId) {
 		Product product = productDao.findById(productId)
 				.orElseThrow(() -> new ResourceNotFoundException("No product found with that id"));
+		if(product.getManufacturer()==null) {
+			throw new ResourceNotFoundException("No product found with that id");
+		}
 
 		ProductResponseDto productResponseDto = modelMapper.map(product, ProductResponseDto.class);
 		productResponseDto
@@ -85,12 +88,12 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ApiResponse deleteSingleProduct(Long productId) {
-		if (productDao.existsById(productId)) {
-			productDao.deleteById(productId);
-		} else {
-			throw new ResourceNotFoundException("No such profuct found with that product id");
-		}
+	public ApiResponse deleteSingleProduct(Long productId, Long manufacturerId) {
+		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No such manufacturer found with that id"));
+		Product product = productDao.findById(productId)
+				.orElseThrow(() -> new ResourceNotFoundException("No product found with that id"));
+		manufacturer.removeProduct(product);
 		return new ApiResponse(true, "Product deleted successfully");
 	}
 
@@ -121,6 +124,10 @@ public class ProductServiceImpl implements ProductService {
 		for (int i = 0; i < productList.size(); i++) {
 
 			Product product = productList.get(i);
+			
+			if(product.getManufacturer()==null) {
+				continue;
+			}
 
 			ProductResponseDto productResponseDto = modelMapper.map(product, ProductResponseDto.class);
 			productResponseDto.setColors(

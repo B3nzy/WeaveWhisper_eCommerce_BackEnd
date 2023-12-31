@@ -60,6 +60,7 @@ public class UserController {
 
 	@DeleteMapping("/delete/{manudacturerId}")
 	public ResponseEntity<?> deleteManufacturer(@PathVariable Long manudacturerId) {
+		ApiResponse apiResProductDelete = manufacturerService.deleteManufacturerListings(manudacturerId);
 		ApiResponse apiRes = manufacturerService.deleteManufacturer(manudacturerId);
 		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
 	}

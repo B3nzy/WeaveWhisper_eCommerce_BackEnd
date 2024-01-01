@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.weavewhisper.dtos.ApiResponse;
 
 @RestControllerAdvice
@@ -39,4 +40,9 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
 	}
 
+	@ExceptionHandler(AmazonS3Exception.class)
+	public ResponseEntity<?> handleAmazonS3Exception(AmazonS3Exception e){
+		return ResponseEntity.status(e.getStatusCode()).body(new ApiResponse(false, e.getErrorMessage()));
+	}
+	
 }

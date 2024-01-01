@@ -16,6 +16,7 @@ import com.weavewhisper.dtos.ProductResponseDto;
 import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.Product;
 import com.weavewhisper.entities.ProductColor;
+import com.weavewhisper.entities.ProductImage;
 import com.weavewhisper.entities.ProductSize;
 import com.weavewhisper.enums.ColorType;
 import com.weavewhisper.enums.SizeType;
@@ -50,6 +51,7 @@ public class ProductServiceImpl implements ProductService {
 
 		ArrayList<String> colorList = productRequestDto.getColors();
 		ArrayList<String> sizeList = productRequestDto.getSizes();
+		ArrayList<String> imageList = productRequestDto.getImageNames();
 
 		System.out.println(colorList + " " + sizeList);
 
@@ -59,6 +61,10 @@ public class ProductServiceImpl implements ProductService {
 
 		for (int i = 0; i < colorList.size(); i++) {
 			product.addColor(new ProductColor(ColorType.valueOf(colorList.get(i))));
+		}
+
+		for (int i = 0; i < imageList.size(); i++) {
+			product.addImage(new ProductImage(imageList.get(i)));
 		}
 
 		manufacturer.addProduct(product);
@@ -72,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductResponseDto getSingleProduct(Long productId) {
 		Product product = productDao.findById(productId)
 				.orElseThrow(() -> new ResourceNotFoundException("No product found with that id"));
-		if(product.getManufacturer()==null) {
+		if (product.getManufacturer() == null) {
 			throw new ResourceNotFoundException("No product found with that id");
 		}
 
@@ -81,6 +87,8 @@ public class ProductServiceImpl implements ProductService {
 				.setColors(product.getColorSet().stream().map(s -> s.getColor().name()).collect(Collectors.toSet()));
 		productResponseDto
 				.setSizes(product.getSizeSet().stream().map(s -> s.getSize().name()).collect(Collectors.toSet()));
+		productResponseDto
+				.setImageNames(product.getImageList().stream().map(p -> p.getImageName()).collect(Collectors.toList()));
 
 		productResponseDto.setBrandName(product.getManufacturer().getBrandName());
 
@@ -124,8 +132,8 @@ public class ProductServiceImpl implements ProductService {
 		for (int i = 0; i < productList.size(); i++) {
 
 			Product product = productList.get(i);
-			
-			if(product.getManufacturer()==null) {
+
+			if (product.getManufacturer() == null) {
 				continue;
 			}
 
@@ -134,6 +142,8 @@ public class ProductServiceImpl implements ProductService {
 					product.getColorSet().stream().map(s -> s.getColor().name()).collect(Collectors.toSet()));
 			productResponseDto
 					.setSizes(product.getSizeSet().stream().map(s -> s.getSize().name()).collect(Collectors.toSet()));
+			productResponseDto.setImageNames(
+					product.getImageList().stream().map(p -> p.getImageName()).collect(Collectors.toList()));
 
 			productResponseDto.setBrandName(product.getManufacturer().getBrandName());
 

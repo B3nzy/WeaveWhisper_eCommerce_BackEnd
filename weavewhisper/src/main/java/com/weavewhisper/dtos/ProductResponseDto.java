@@ -1,6 +1,6 @@
 package com.weavewhisper.dtos;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.weavewhisper.enums.CategoryType;
@@ -23,7 +23,7 @@ public class ProductResponseDto {
 	private String brandName;
 	private GenderType gender;
 	private CategoryType category;
-//	private ArrayList<String> imageUrls;
+	private List<String> imageNames;
 	private Set<String> colors;
 	private Set<String> sizes;
 }

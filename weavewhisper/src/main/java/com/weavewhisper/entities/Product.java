@@ -1,6 +1,8 @@
 package com.weavewhisper.entities;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.weavewhisper.enums.CategoryType;
@@ -45,7 +47,7 @@ import lombok.ToString;
 @ToString(callSuper = true, exclude = { "sizeMap", "colorMap" })
 public class Product extends BaseEntity {
 
-	@Column(nullable = false,unique = true)
+	@Column(nullable = false, unique = true)
 	private String name;
 	@Column(nullable = false, length = 1000)
 	private String description;
@@ -71,6 +73,9 @@ public class Product extends BaseEntity {
 
 	@OneToMany(mappedBy = "productRef", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ProductColor> colorSet = new HashSet<>();
+
+	@OneToMany(mappedBy = "productRef", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ProductImage> imageList = new ArrayList<>();
 
 	public Product(String name, String description, Double actualPrice, Double sellingPrice, GenderType gender,
 			CategoryType category) {
@@ -101,6 +106,16 @@ public class Product extends BaseEntity {
 	public void removeColor(ProductColor color) {
 		colorSet.remove(color);
 		color.setProductRef(null);
+	}
+
+	public void addImage(ProductImage image) {
+		imageList.add(image);
+		image.setProductRef(this);
+	}
+
+	public void removeImage(ProductImage image) {
+		imageList.remove(image);
+		image.setProductRef(null);
 	}
 
 }

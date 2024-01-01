@@ -25,7 +25,7 @@ public class ProductRequestDto {
 	private int inventoryCount;
 	private GenderType gender;
 	private CategoryType category;
-	private ArrayList<String> imageUrls;
+	private ArrayList<String> imageNames;
 	private ArrayList<String> colors;
 	private ArrayList<String> sizes;
 }

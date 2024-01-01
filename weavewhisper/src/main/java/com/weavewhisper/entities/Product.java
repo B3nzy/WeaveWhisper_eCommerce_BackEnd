@@ -1,5 +1,7 @@
 package com.weavewhisper.entities;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +65,8 @@ public class Product extends BaseEntity {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private CategoryType category;
+	
+	private LocalDateTime createdAt = LocalDateTime.now();
 
 	@ManyToOne
 	@JoinColumn(name = "manufacture_id")

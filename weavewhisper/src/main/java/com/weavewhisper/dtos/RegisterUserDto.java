@@ -13,7 +13,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class RegisterUserDto {
-
+	
+	private Long userId;
 	@Email(message = "Invalid email address")
 	private String email;
 	@NotBlank

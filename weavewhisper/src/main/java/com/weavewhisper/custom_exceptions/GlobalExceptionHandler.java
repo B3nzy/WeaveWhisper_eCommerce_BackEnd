@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -45,4 +46,13 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(e.getStatusCode()).body(new ApiResponse(false, e.getErrorMessage()));
 	}
 	
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<?> handleUnauthorizedException(UnauthorizedException e){
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
+	}
+	
+	@ExceptionHandler(InvalidDataAccessApiUsageException.class)
+	public ResponseEntity<?> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException e){
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+	}
 }

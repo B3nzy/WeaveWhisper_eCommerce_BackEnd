@@ -20,7 +20,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 @Entity
 @Table(name = "users")
 public class BaseUser extends BaseEntity {

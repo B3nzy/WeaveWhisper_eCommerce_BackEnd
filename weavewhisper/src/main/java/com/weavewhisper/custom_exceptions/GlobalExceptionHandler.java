@@ -3,6 +3,7 @@ package com.weavewhisper.custom_exceptions;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
@@ -35,24 +36,31 @@ public class GlobalExceptionHandler {
 		});
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hashMap);
 	}
-	
+
 	@ExceptionHandler(IncorrectResultSizeDataAccessException.class)
-	private ResponseEntity<?> handleIncorrectResultSizeDataAccessException(IncorrectResultSizeDataAccessException e){
+	private ResponseEntity<?> handleIncorrectResultSizeDataAccessException(IncorrectResultSizeDataAccessException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
 	}
 
 	@ExceptionHandler(AmazonS3Exception.class)
-	public ResponseEntity<?> handleAmazonS3Exception(AmazonS3Exception e){
+	public ResponseEntity<?> handleAmazonS3Exception(AmazonS3Exception e) {
 		return ResponseEntity.status(e.getStatusCode()).body(new ApiResponse(false, e.getErrorMessage()));
 	}
-	
+
 	@ExceptionHandler(UnauthorizedException.class)
-	public ResponseEntity<?> handleUnauthorizedException(UnauthorizedException e){
+	public ResponseEntity<?> handleUnauthorizedException(UnauthorizedException e) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
 	}
-	
+
 	@ExceptionHandler(InvalidDataAccessApiUsageException.class)
-	public ResponseEntity<?> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException e){
+	public ResponseEntity<?> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
 	}
+
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+		
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, "A product with that name already exists!"));
+	}
+
 }

@@ -1,5 +1,8 @@
 package com.weavewhisper.entities;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import com.weavewhisper.enums.ColorType;
 
 import jakarta.persistence.Column;
@@ -26,6 +29,7 @@ public class ProductColor extends BaseEntity {
 	private ColorType color;
 
 	@ManyToOne
+	@Cascade(CascadeType.ALL)
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product productRef;
 

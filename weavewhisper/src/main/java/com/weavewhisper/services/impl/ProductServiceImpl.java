@@ -1,29 +1,38 @@
 package com.weavewhisper.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
+import org.modelmapper.internal.bytebuddy.dynamic.loading.PackageDefinitionStrategy.Definition.Undefined;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
+import com.weavewhisper.dtos.SearchProductDto;
 import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.Product;
 import com.weavewhisper.entities.ProductColor;
 import com.weavewhisper.entities.ProductImage;
 import com.weavewhisper.entities.ProductSize;
+import com.weavewhisper.entities.QManufacturer;
+import com.weavewhisper.entities.QProduct;
+import com.weavewhisper.entities.QProductColor;
+import com.weavewhisper.entities.QProductSize;
+import com.weavewhisper.enums.CategoryType;
 import com.weavewhisper.enums.ColorType;
+import com.weavewhisper.enums.GenderType;
 import com.weavewhisper.enums.SizeType;
 import com.weavewhisper.repositories.ManufacturerDao;
 import com.weavewhisper.repositories.ProductDao;
 import com.weavewhisper.services.ProductService;
-
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -38,6 +47,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private ManufacturerDao manufacturerDao;
+
+	@Autowired
+	private EntityManager em;
 
 	@Override
 	public ProductCreatedApiResponseDto addProduct(ProductRequestDto productRequestDto) {
@@ -123,9 +135,59 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductResponseDto> getAllProducts() {
+	public List<ProductResponseDto> getAllProducts(SearchProductDto searchProductDto) {
 
-		List<Product> productList = productDao.findAll();
+		if (searchProductDto.getGenders() == null || searchProductDto.getGenders().size() == 0) {
+			searchProductDto.setGenders(Arrays.asList(GenderType.values()));
+		}
+
+		if (searchProductDto.getColors() == null || searchProductDto.getColors().size() == 0) {
+			searchProductDto.setColors(Arrays.asList(ColorType.values()));
+		}
+
+		if (searchProductDto.getSizes() == null || searchProductDto.getSizes().size() == 0) {
+			searchProductDto.setSizes(Arrays.asList(SizeType.values()));
+		}
+
+		if (searchProductDto.getCategories() == null || searchProductDto.getCategories().size() == 0) {
+			searchProductDto.setCategories(Arrays.asList(CategoryType.values()));
+		}
+
+		if (searchProductDto.getPriceMax() == 0) {
+			searchProductDto.setPriceMax(Double.MAX_VALUE);
+		}
+
+		if (searchProductDto.getBrandNames() == null || searchProductDto.getBrandNames().size() == 0) {
+			List<String> manufacturerNamesList = new ArrayList<>();
+			List<Manufacturer> manufacturerList = manufacturerDao.findAll();
+			System.out.println(manufacturerList.size());
+			for (int i = 0; i < manufacturerList.size(); i++) {
+				manufacturerNamesList.add(manufacturerList.get(i).getBrandName());
+			}
+			searchProductDto.setBrandNames(manufacturerNamesList);
+		}
+
+		System.out.println(searchProductDto);
+
+		QProduct qProduct = QProduct.product;
+		QProductColor productColor = QProductColor.productColor;
+		QProductSize productSize = QProductSize.productSize;
+		QManufacturer qManufacturer = QManufacturer.manufacturer;
+
+		JPQLQuery<Product> query = new JPAQuery<Product>(em);
+
+		List<Product> productList = query.select(qProduct).from(qProduct).innerJoin(productColor)
+				.on(productColor.productRef.id.eq(qProduct.id)).innerJoin(productSize)
+				.on(productSize.productRef.id.eq(qProduct.id)).innerJoin(qManufacturer)
+				.on(qManufacturer.id.eq(qProduct.manufacturer.id))
+				.where(qProduct.name.containsIgnoreCase(searchProductDto.getSearchTerm()))
+				.where(qProduct.gender.in(searchProductDto.getGenders()))
+				.where(productColor.color.in(searchProductDto.getColors()))
+				.where(productSize.size.in(searchProductDto.getSizes()))
+				.where(qProduct.category.in(searchProductDto.getCategories()))
+				.where(qProduct.sellingPrice.between(searchProductDto.getPriceMin(), searchProductDto.getPriceMax()))
+				.where(qManufacturer.brandName.in(searchProductDto.getBrandNames()))
+				.fetch();
 
 		List<ProductResponseDto> productResDtoList = new ArrayList<>();
 

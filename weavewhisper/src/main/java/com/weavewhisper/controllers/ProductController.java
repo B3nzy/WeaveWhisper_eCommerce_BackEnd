@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
 import com.weavewhisper.dtos.ProductShortResponseDto;
+import com.weavewhisper.dtos.SearchProductDto;
 import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.services.ProductService;
 
@@ -29,9 +31,9 @@ public class ProductController {
 	private ProductService productService;
 	
 	
-	@GetMapping
-	public ResponseEntity<?> getAllProducts(){
-		List<ProductResponseDto> productList = productService.getAllProducts();
+	@PostMapping
+	public ResponseEntity<?> getAllProducts(@RequestBody SearchProductDto searchProductDto){
+		List<ProductResponseDto> productList = productService.getAllProducts(searchProductDto);
 		return ResponseEntity.status(HttpStatus.OK).body(productList);
 		
 	}

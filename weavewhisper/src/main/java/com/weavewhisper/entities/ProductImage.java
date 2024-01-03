@@ -1,5 +1,8 @@
 package com.weavewhisper.entities;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -22,6 +25,7 @@ public class ProductImage extends BaseEntity {
 	private String imageName;
 
 	@ManyToOne
+	@Cascade(CascadeType.ALL)
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product productRef;
 

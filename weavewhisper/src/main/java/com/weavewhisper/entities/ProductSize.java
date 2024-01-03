@@ -1,5 +1,8 @@
 package com.weavewhisper.entities;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import com.weavewhisper.enums.SizeType;
 
 import jakarta.persistence.Column;
@@ -26,6 +29,7 @@ public class ProductSize extends BaseEntity {
 	private SizeType size;
 
 	@ManyToOne
+	@Cascade(CascadeType.ALL)
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product productRef;
 

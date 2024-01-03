@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
 		
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, "A product with that name already exists!"));
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, "Something went wrong!"));
 	}
 
 }

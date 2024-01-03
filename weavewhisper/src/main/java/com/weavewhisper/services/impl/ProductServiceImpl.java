@@ -8,6 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.internal.bytebuddy.dynamic.loading.PackageDefinitionStrategy.Definition.Undefined;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
@@ -15,7 +17,9 @@ import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
+import com.weavewhisper.dtos.ProductSearchResponseDto;
 import com.weavewhisper.dtos.SearchProductDto;
+import com.weavewhisper.dtos.SearchResponseDto;
 import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.Product;
 import com.weavewhisper.entities.ProductColor;
@@ -135,9 +139,19 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductResponseDto> getAllProducts(SearchProductDto searchProductDto) {
-		
-		if(searchProductDto.getSearchTerm()==null) {
+	public SearchResponseDto getAllProducts(SearchProductDto searchProductDto) {
+
+		if (searchProductDto.getPageNumber() <= 0) {
+			searchProductDto.setPageNumber(0);
+		} else {
+			searchProductDto.setPageNumber(searchProductDto.getPageNumber() - 1);
+		}
+
+		if (searchProductDto.getOffset() == 0) {
+			searchProductDto.setOffset(8);
+		}
+
+		if (searchProductDto.getSearchTerm() == null) {
 			searchProductDto.setSearchTerm("");
 		}
 
@@ -190,33 +204,46 @@ public class ProductServiceImpl implements ProductService {
 				.where(productSize.size.in(searchProductDto.getSizes()))
 				.where(qProduct.category.in(searchProductDto.getCategories()))
 				.where(qProduct.sellingPrice.between(searchProductDto.getPriceMin(), searchProductDto.getPriceMax()))
-				.where(qManufacturer.brandName.in(searchProductDto.getBrandNames()))
-				.fetch();
+				.where(qManufacturer.brandName.in(searchProductDto.getBrandNames())).fetch();
 
-		List<ProductResponseDto> productResDtoList = new ArrayList<>();
+		int totalElements = productList.size();
 
-		for (int i = 0; i < productList.size(); i++) {
+		SearchResponseDto searchResponseDto = new SearchResponseDto();
 
+		List<ProductSearchResponseDto> productSearchResponseDtoList = new ArrayList<>();
+
+		int start = searchProductDto.getPageNumber() * searchProductDto.getOffset();
+		int end = (searchProductDto.getPageNumber() + 1) * searchProductDto.getOffset();
+
+		if (start > productList.size()) {
+			searchResponseDto.setPageNumber(searchProductDto.getPageNumber() + 1);
+			searchResponseDto.setOffset(searchProductDto.getOffset());
+			searchResponseDto.setTotalElements(totalElements);
+			searchResponseDto.setProductSearchResponseDto(productSearchResponseDtoList);
+			return searchResponseDto;
+		}
+		if (end >= productList.size()) {
+			end = productList.size();
+		}
+
+		for (int i = start; i < end; i++) {
 			Product product = productList.get(i);
-
 			if (product.getManufacturer() == null) {
 				continue;
 			}
-
-			ProductResponseDto productResponseDto = modelMapper.map(product, ProductResponseDto.class);
-			productResponseDto.setColors(
-					product.getColorSet().stream().map(s -> s.getColor().name()).collect(Collectors.toSet()));
-			productResponseDto
-					.setSizes(product.getSizeSet().stream().map(s -> s.getSize().name()).collect(Collectors.toSet()));
-			productResponseDto.setImageNames(
-					product.getImageList().stream().map(p -> p.getImageName()).collect(Collectors.toList()));
-
-			productResponseDto.setBrandName(product.getManufacturer().getBrandName());
-
-			productResDtoList.add(productResponseDto);
+			ProductSearchResponseDto productSearchResponseDto = modelMapper.map(product,
+					ProductSearchResponseDto.class);
+			productSearchResponseDto.setImageName(product.getImageList().get(0).getImageName());
+			productSearchResponseDto.setBrandName(product.getManufacturer().getBrandName());
+			productSearchResponseDtoList.add(productSearchResponseDto);
 		}
 
-		return productResDtoList;
+		searchResponseDto.setPageNumber(searchProductDto.getPageNumber() + 1);
+		searchResponseDto.setOffset(searchProductDto.getOffset());
+		searchResponseDto.setTotalElements(totalElements);
+		searchResponseDto.setProductSearchResponseDto(productSearchResponseDtoList);
+
+		return searchResponseDto;
 	}
 
 }

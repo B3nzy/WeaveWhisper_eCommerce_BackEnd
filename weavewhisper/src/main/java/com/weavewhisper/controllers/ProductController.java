@@ -20,6 +20,7 @@ import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
 import com.weavewhisper.dtos.ProductShortResponseDto;
 import com.weavewhisper.dtos.SearchProductDto;
+import com.weavewhisper.dtos.SearchResponseDto;
 import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.services.ManufacturerService;
 import com.weavewhisper.services.ProductService;
@@ -37,8 +38,8 @@ public class ProductController {
 	
 	@PostMapping
 	public ResponseEntity<?> getAllProducts(@RequestBody SearchProductDto searchProductDto){
-		List<ProductResponseDto> productList = productService.getAllProducts(searchProductDto);
-		return ResponseEntity.status(HttpStatus.OK).body(productList);
+		SearchResponseDto searchResponseDto = productService.getAllProducts(searchProductDto);
+		return ResponseEntity.status(HttpStatus.OK).body(searchResponseDto);
 		
 	}
 

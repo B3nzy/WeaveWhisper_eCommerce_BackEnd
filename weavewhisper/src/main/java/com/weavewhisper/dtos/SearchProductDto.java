@@ -15,6 +15,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class SearchProductDto {
+	private int pageNumber;
+	private int offset;
 	private String searchTerm;
 	private List<GenderType> genders;
 	private List<ColorType> colors;

@@ -9,6 +9,7 @@ import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
 import com.weavewhisper.dtos.SearchProductDto;
+import com.weavewhisper.dtos.SearchResponseDto;
 
 @Service
 public interface ProductService {
@@ -16,5 +17,5 @@ public interface ProductService {
 	ProductResponseDto getSingleProduct(Long productId);
 	ApiResponse deleteSingleProduct(Long productId, Long manufacturerId);
 	ApiResponse updateProduct(ProductRequestDto productRequestDto);
-	List<ProductResponseDto> getAllProducts(SearchProductDto searchProductDto);
+	SearchResponseDto getAllProducts(SearchProductDto searchProductDto);
 }

@@ -11,4 +11,5 @@ public interface ManufacturerService {
 	ApiResponse deleteManufacturerListings(Long manufacturerId);
 	ApiResponse deleteManufacturer(Long manufacturerId);
 	List<ProductShortResponseDto> getAllProducts(Long manufacturerId);
+	List<String> getAllManufacturerBrandNames();
 }

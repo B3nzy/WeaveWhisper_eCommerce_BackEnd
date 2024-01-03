@@ -21,6 +21,7 @@ import com.weavewhisper.dtos.ProductResponseDto;
 import com.weavewhisper.dtos.ProductShortResponseDto;
 import com.weavewhisper.dtos.SearchProductDto;
 import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
+import com.weavewhisper.services.ManufacturerService;
 import com.weavewhisper.services.ProductService;
 
 @RestController
@@ -29,6 +30,9 @@ public class ProductController {
 
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private ManufacturerService manufacturerService;
 	
 	
 	@PostMapping
@@ -60,6 +64,12 @@ public class ProductController {
 	public ResponseEntity<?> deleteProductById(@PathVariable Long productId, @PathVariable Long manufacturerId) {
 		ApiResponse apiRes = productService.deleteSingleProduct(productId, manufacturerId);
 		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
+	}
+	
+	@GetMapping("/get/manufacturer/brandnames")
+	public ResponseEntity<?> getAllManufacturerBrandNames(){
+		List<String> manufacturerBrandNames = manufacturerService.getAllManufacturerBrandNames();
+		return ResponseEntity.status(HttpStatus.OK).body(manufacturerBrandNames);
 	}
 
 }

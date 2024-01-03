@@ -2,6 +2,7 @@ package com.weavewhisper.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,18 +44,18 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId)
 				.orElseThrow(() -> new ResourceNotFoundException("No Manufacturer found with that id"));
 
-		manufacturer.getProductList().forEach((p)->{
+		manufacturer.getProductList().forEach((p) -> {
 			manufacturer.removeProduct(p);
 		});
-		
+
 		return new ApiResponse(true, "Deleted all listings of the manufacturer successfully!");
 	}
-	
+
 	@Override
 	public ApiResponse deleteManufacturer(Long manufacturerId) {
 		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId)
 				.orElseThrow(() -> new ResourceNotFoundException("No Manufacturer found with that id"));
-		
+
 		manufacturerDao.deleteById(manufacturerId);
 		return new ApiResponse(true, "Manufacturer deleted successfully!");
 	}
@@ -74,6 +75,16 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		});
 
 		return productResDto;
+	}
+
+	@Override
+	public List<String> getAllManufacturerBrandNames() {
+
+		List<Manufacturer> manufacturerList = manufacturerDao.findAll();
+		List<String> manufacturerBrandNameList = manufacturerList.stream().map(m -> m.getBrandName())
+				.collect(Collectors.toList());
+
+		return manufacturerBrandNameList;
 	}
 
 }

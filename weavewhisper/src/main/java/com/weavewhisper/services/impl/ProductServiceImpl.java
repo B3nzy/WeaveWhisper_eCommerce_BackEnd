@@ -136,6 +136,10 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<ProductResponseDto> getAllProducts(SearchProductDto searchProductDto) {
+		
+		if(searchProductDto.getSearchTerm()==null) {
+			searchProductDto.setSearchTerm("");
+		}
 
 		if (searchProductDto.getGenders() == null || searchProductDto.getGenders().size() == 0) {
 			searchProductDto.setGenders(Arrays.asList(GenderType.values()));

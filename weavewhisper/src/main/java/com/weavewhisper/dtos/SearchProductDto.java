@@ -25,4 +25,5 @@ public class SearchProductDto {
 	private double priceMin;
 	private double priceMax;
 	private List<String> brandNames;
+	private String sortBy;
 }

@@ -175,6 +175,10 @@ public class ProductServiceImpl implements ProductService {
 			searchProductDto.setPriceMax(Double.MAX_VALUE);
 		}
 
+		if (searchProductDto.getSortBy() == null || searchProductDto.getSortBy() == "") {
+			searchProductDto.setSortBy("LATEST");
+		}
+
 		if (searchProductDto.getBrandNames() == null || searchProductDto.getBrandNames().size() == 0) {
 			List<String> manufacturerNamesList = new ArrayList<>();
 			List<Manufacturer> manufacturerList = manufacturerDao.findAll();
@@ -211,6 +215,20 @@ public class ProductServiceImpl implements ProductService {
 		SearchResponseDto searchResponseDto = new SearchResponseDto();
 
 		List<ProductSearchResponseDto> productSearchResponseDtoList = new ArrayList<>();
+
+		if (searchProductDto.getSortBy().equals("LATEST")) {
+			productList = productList.stream().sorted((p1, p2) -> (-1) * p1.getCreatedAt().compareTo(p2.getCreatedAt()))
+					.collect(Collectors.toList());
+		} else if (searchProductDto.getSortBy().equals("OLDEST")) {
+			productList = productList.stream().sorted((p1, p2) -> p1.getCreatedAt().compareTo(p2.getCreatedAt()))
+					.collect(Collectors.toList());
+		} else if (searchProductDto.getSortBy().equals("PRICE_ASC")) {
+			productList = productList.stream().sorted((p1, p2) -> p1.getSellingPrice().compareTo(p2.getSellingPrice()))
+					.collect(Collectors.toList());
+		} else if (searchProductDto.getSortBy().equals("PRICE_DESC")) {
+			productList = productList.stream().sorted((p1, p2) -> (-1)*p1.getSellingPrice().compareTo(p2.getSellingPrice()))
+					.collect(Collectors.toList());
+		}
 
 		int start = searchProductDto.getPageNumber() * searchProductDto.getOffset();
 		int end = (searchProductDto.getPageNumber() + 1) * searchProductDto.getOffset();

@@ -10,5 +10,5 @@ import lombok.ToString;
 public class ProductShortResponseDto {
 	private Long id;
 	private String name;
-	private String imageUrl;
+	private String imageName;
 }

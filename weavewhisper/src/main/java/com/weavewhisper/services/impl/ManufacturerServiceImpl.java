@@ -69,8 +69,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
 		manufacturer.getProductList().stream().forEach(p -> {
 			ProductShortResponseDto productShortResponseDto = modelMapper.map(p, ProductShortResponseDto.class);
-			// Need to add the image here later;
-//			 productShortResponseDto.setImageUrl();
+			 productShortResponseDto.setImageUrl(p.getImageList().get(0).getImageName());
 			productResDto.add(productShortResponseDto);
 		});
 

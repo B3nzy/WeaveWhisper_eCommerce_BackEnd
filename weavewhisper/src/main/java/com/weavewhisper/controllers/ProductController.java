@@ -72,5 +72,20 @@ public class ProductController {
 		List<String> manufacturerBrandNames = manufacturerService.getAllManufacturerBrandNames();
 		return ResponseEntity.status(HttpStatus.OK).body(manufacturerBrandNames);
 	}
+	
+	@GetMapping("/getsizes")
+	public ResponseEntity<?> getAllProductSizes(){
+		return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductSizes());
+	}
+	
+	@GetMapping("/getcolors")
+	public ResponseEntity<?> getAllProductColors(){
+		return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductColors());
+	}
+	
+	@GetMapping("/getcategories")
+	public ResponseEntity<?> getAllProductCategories(){
+		return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductCategories());
+	}
 
 }

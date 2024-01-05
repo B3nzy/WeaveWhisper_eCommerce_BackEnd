@@ -18,4 +18,7 @@ public interface ProductService {
 	ApiResponse deleteSingleProduct(Long productId, Long manufacturerId);
 	ApiResponse updateProduct(ProductRequestDto productRequestDto);
 	SearchResponseDto getAllProducts(SearchProductDto searchProductDto);
+	List<String> getAllProductSizes();
+	List<String> getAllProductColors();
+	List<String> getAllProductCategories();
 }

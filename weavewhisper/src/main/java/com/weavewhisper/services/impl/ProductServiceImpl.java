@@ -270,4 +270,19 @@ public class ProductServiceImpl implements ProductService {
 		return searchResponseDto;
 	}
 
+	@Override
+	public List<String> getAllProductSizes() {
+		return Arrays.asList(SizeType.values()).stream().map(s->s.name()).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAllProductColors() {
+		return Arrays.asList(ColorType.values()).stream().map(s->s.name()).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAllProductCategories() {
+		return Arrays.asList(CategoryType.values()).stream().map(s->s.name()).collect(Collectors.toList());
+	}
+
 }

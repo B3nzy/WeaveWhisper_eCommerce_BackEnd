@@ -46,7 +46,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 			throw new DuplicateEmailException("User with this email already exists!");
 		} 
 		else if(manufacturerDao.existsByBrandName(manufacturerDto.getBrandName())) {
-			throw new DuplicateBrandNameException("This brand already registered.");
+			throw new DuplicateBrandNameException("Brand already registered.");
 		} else if(manufacturerDao.existsByPanNumber(manufacturerDto.getPanNumber())) {
 			throw new DuplicatePanNumberException("Pan Number already exists.");
 		}

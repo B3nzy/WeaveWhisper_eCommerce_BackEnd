@@ -26,7 +26,7 @@ import lombok.ToString;
 public class Manufacturer extends BaseUser {
 	@Column(length = 50, nullable = false, unique = true)
 	private String brandName;
-	@Column(length = 50, nullable = false, unique = true)
+	@Column(length = 10, nullable = false, unique = true)
 	private String panNumber;
 
 	@OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL)

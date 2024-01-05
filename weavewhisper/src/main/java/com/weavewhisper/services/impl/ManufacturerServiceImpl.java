@@ -8,7 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.weavewhisper.custom_exceptions.DuplicateBrandNameException;
 import com.weavewhisper.custom_exceptions.DuplicateEmailException;
+import com.weavewhisper.custom_exceptions.DuplicatePanNumberException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductShortResponseDto;
@@ -42,7 +44,13 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 	public void registerManufacturer(RegisterUserDto manufacturerDto) {
 		if (userDao.existsByEmail(manufacturerDto.getEmail())) {
 			throw new DuplicateEmailException("User with this email already exists!");
-		} else {
+		} 
+		else if(manufacturerDao.existsByBrandName(manufacturerDto.getBrandName())) {
+			throw new DuplicateBrandNameException("This brand already registered.");
+		} else if(manufacturerDao.existsByPanNumber(manufacturerDto.getPanNumber())) {
+			throw new DuplicatePanNumberException("Pan Number already exists.");
+		}
+		else {
 			manufacturerDao.save(modelMapper.map(manufacturerDto, Manufacturer.class));
 		}
 	}

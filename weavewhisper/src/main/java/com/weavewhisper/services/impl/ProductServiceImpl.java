@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
+import com.weavewhisper.custom_exceptions.DuplicateProductNameException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
@@ -58,8 +59,13 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public ProductCreatedApiResponseDto addProduct(ProductRequestDto productRequestDto) {
 
+		if(productDao.existsByName(productRequestDto.getName())) {
+			throw new DuplicateProductNameException("Dupicate product name.");
+		}
+
 		Manufacturer manufacturer = manufacturerDao.findById(productRequestDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("No user found with that user id"));
+		
 
 		Product product = modelMapper.map(productRequestDto, Product.class);
 		System.out.println(productRequestDto);

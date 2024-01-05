@@ -10,4 +10,5 @@ import com.weavewhisper.entities.Product;
 @Repository
 public interface ProductDao extends JpaRepository<Product, Long>, QuerydslPredicateExecutor<Product> {
 	Product findByName(String name);
+	boolean existsByName(String name);
 }

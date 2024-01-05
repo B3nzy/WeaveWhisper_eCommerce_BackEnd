@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.weavewhisper.custom_exceptions.DuplicateEmailException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductShortResponseDto;
@@ -16,6 +17,7 @@ import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.Product;
 import com.weavewhisper.repositories.ManufacturerDao;
 import com.weavewhisper.repositories.ProductDao;
+import com.weavewhisper.repositories.UserDao;
 import com.weavewhisper.services.ManufacturerService;
 
 import jakarta.transaction.Transactional;
@@ -32,11 +34,17 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
 	@Autowired
 	public ProductDao productDao;
+	
+	@Autowired
+	private UserDao userDao;
 
 	@Override
-	public void registerManufacturer(RegisterUserDto manufacturer) {
-		manufacturerDao.save(modelMapper.map(manufacturer, Manufacturer.class));
-
+	public void registerManufacturer(RegisterUserDto manufacturerDto) {
+		if (userDao.existsByEmail(manufacturerDto.getEmail())) {
+			throw new DuplicateEmailException("User with this email already exists!");
+		} else {
+			manufacturerDao.save(modelMapper.map(manufacturerDto, Manufacturer.class));
+		}
 	}
 
 	@Override
@@ -69,7 +77,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
 		manufacturer.getProductList().stream().forEach(p -> {
 			ProductShortResponseDto productShortResponseDto = modelMapper.map(p, ProductShortResponseDto.class);
-			 productShortResponseDto.setImageName(p.getImageList().get(0).getImageName());
+			productShortResponseDto.setImageName(p.getImageList().get(0).getImageName());
 			productResDto.add(productShortResponseDto);
 		});
 

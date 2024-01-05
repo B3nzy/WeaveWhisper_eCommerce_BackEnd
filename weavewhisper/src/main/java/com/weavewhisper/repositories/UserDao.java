@@ -7,5 +7,6 @@ import com.weavewhisper.entities.BaseUser;
 public interface UserDao extends JpaRepository<BaseUser, Long> {
 	
 	BaseUser findByEmailAndPassword(String email, String password);
+	boolean existsByEmail(String email);
 
 }

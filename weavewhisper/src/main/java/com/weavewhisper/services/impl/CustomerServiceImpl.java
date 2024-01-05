@@ -4,12 +4,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.weavewhisper.custom_exceptions.DuplicateEmailException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.custom_exceptions.UnauthorizedException;
 import com.weavewhisper.dtos.RegisterUserDto;
 import com.weavewhisper.dtos.UserResponseDto;
 import com.weavewhisper.entities.Customer;
 import com.weavewhisper.repositories.CustomerDao;
+import com.weavewhisper.repositories.UserDao;
 import com.weavewhisper.services.CustomerService;
 
 import jakarta.transaction.Transactional;
@@ -23,10 +25,18 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private UserDao userDao;
 
 	@Override
-	public void registerCustomer(RegisterUserDto customer) {
-		customerDao.save(modelMapper.map(customer, Customer.class));
+	public void registerCustomer(RegisterUserDto customerDto) {
+		if(userDao.existsByEmail(customerDto.getEmail())) {
+			throw new DuplicateEmailException("User with this email already exists!");
+		} else {			
+			Customer customer = modelMapper.map(customerDto, Customer.class);
+			customerDao.save(customer);
+		}
 	}
 
 	@Override

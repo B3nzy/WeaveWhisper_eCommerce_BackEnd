@@ -52,6 +52,16 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
 	}
 
+	@ExceptionHandler(DuplicateEmailException.class)
+	public ResponseEntity<?> handleDuplicateEmailException(DuplicateEmailException e) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
+	}
+	
+	@ExceptionHandler(DuplicateProductNameException.class)
+	public ResponseEntity<?> handleDuplicateProductNameException(DuplicateProductNameException e) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
+	}
+	
 	@ExceptionHandler(InvalidDataAccessApiUsageException.class)
 	public ResponseEntity<?> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
@@ -59,7 +69,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-		
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, "Something went wrong!"));
 	}
 

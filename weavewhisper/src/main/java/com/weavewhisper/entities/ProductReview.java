@@ -27,7 +27,7 @@ public class ProductReview extends BaseEntity {
 	private int rating;
 	@Column(length = 500)
 	private String review;
-	private LocalDateTime createdAt= LocalDateTime.now();
+	private LocalDateTime createdAt= LocalDateTime.now().withNano(0);
 	@Column(length = 50)
 	private String customerFullName;
 

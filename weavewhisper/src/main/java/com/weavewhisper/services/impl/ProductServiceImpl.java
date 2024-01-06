@@ -1,5 +1,7 @@
 package com.weavewhisper.services.impl;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,8 +109,12 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		List<ReviewResponseDto> productReviews = product.getReviewList().stream()
-				.sorted((p1, p2) ->(-1)* p1.getCreatedAt().compareTo(p2.getCreatedAt()))
-				.map(p -> modelMapper.map(p, ReviewResponseDto.class)).collect(Collectors.toList());
+				.sorted((p1, p2) -> (-1) * p1.getCreatedAt().compareTo(p2.getCreatedAt())).map(p -> {
+					ReviewResponseDto reviewResponseDto = modelMapper.map(p, ReviewResponseDto.class);
+					reviewResponseDto.setCreatedAt(
+							p.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+					return reviewResponseDto;
+				}).collect(Collectors.toList());
 
 		ProductResponseDto productResponseDto = modelMapper.map(product, ProductResponseDto.class);
 		productResponseDto
@@ -312,8 +318,12 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		List<ReviewResponseDto> productReviews = product.getReviewList().stream()
-				.sorted((p1, p2) -> (-1)*p1.getCreatedAt().compareTo(p2.getCreatedAt()))
-				.map(p -> modelMapper.map(p, ReviewResponseDto.class)).collect(Collectors.toList());
+				.sorted((p1, p2) -> (-1) * p1.getCreatedAt().compareTo(p2.getCreatedAt())).map(p -> {
+					ReviewResponseDto reviewResponseDto = modelMapper.map(p, ReviewResponseDto.class);
+					reviewResponseDto.setCreatedAt(
+							p.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+					return reviewResponseDto;
+				}).collect(Collectors.toList());
 
 		return productReviews;
 	}

@@ -26,4 +26,5 @@ public class ProductResponseDto {
 	private List<String> imageNames;
 	private Set<String> colors;
 	private Set<String> sizes;
+	private List<ReviewResponseDto> productReviews;
 }

@@ -46,7 +46,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true, exclude = { "sizeMap", "colorMap" })
+@ToString(callSuper = true, exclude = { "sizeSet", "colorSet", "imageList", "reviewList" })
 public class Product extends BaseEntity {
 
 	@Column(nullable = false, unique = true)
@@ -65,7 +65,7 @@ public class Product extends BaseEntity {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private CategoryType category;
-	
+
 	private LocalDateTime createdAt = LocalDateTime.now();
 
 	@ManyToOne
@@ -80,6 +80,9 @@ public class Product extends BaseEntity {
 
 	@OneToMany(mappedBy = "productRef", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProductImage> imageList = new ArrayList<>();
+
+	@OneToMany(mappedBy = "productRef", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ProductReview> reviewList = new ArrayList<>();
 
 	public Product(String name, String description, Double actualPrice, Double sellingPrice, GenderType gender,
 			CategoryType category) {
@@ -120,6 +123,16 @@ public class Product extends BaseEntity {
 	public void removeImage(ProductImage image) {
 		imageList.remove(image);
 		image.setProductRef(null);
+	}
+
+	public void addReview(ProductReview review) {
+		reviewList.add(review);
+		review.setProductRef(this);
+	}
+
+	public void removeReview(ProductReview review) {
+		reviewList.remove(review);
+		review.setProductRef(null);
 	}
 
 }

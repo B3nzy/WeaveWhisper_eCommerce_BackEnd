@@ -19,6 +19,7 @@ import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
 import com.weavewhisper.dtos.ProductShortResponseDto;
+import com.weavewhisper.dtos.ReviewResquestDto;
 import com.weavewhisper.dtos.SearchProductDto;
 import com.weavewhisper.dtos.SearchResponseDto;
 import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
@@ -86,6 +87,17 @@ public class ProductController {
 	@GetMapping("/getcategories")
 	public ResponseEntity<?> getAllProductCategories(){
 		return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductCategories());
+	}
+	
+	@PostMapping("/addreview")
+	public ResponseEntity<?> addProductReview(@RequestBody ReviewResquestDto reviewResquestDto){
+		ApiResponse apiRes = productService.addReview(reviewResquestDto);
+		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
+	}
+	
+	@GetMapping("/getallreview/product/{productId}")
+	public ResponseEntity<?> getAllProductReview(@PathVariable Long productId){
+		return ResponseEntity.status(HttpStatus.OK).body(productService.getAllReviewsForAProduct(productId));
 	}
 
 }

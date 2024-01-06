@@ -19,12 +19,15 @@ import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.dtos.ProductRequestDto;
 import com.weavewhisper.dtos.ProductResponseDto;
 import com.weavewhisper.dtos.ProductSearchResponseDto;
+import com.weavewhisper.dtos.ReviewResponseDto;
+import com.weavewhisper.dtos.ReviewResquestDto;
 import com.weavewhisper.dtos.SearchProductDto;
 import com.weavewhisper.dtos.SearchResponseDto;
 import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.Product;
 import com.weavewhisper.entities.ProductColor;
 import com.weavewhisper.entities.ProductImage;
+import com.weavewhisper.entities.ProductReview;
 import com.weavewhisper.entities.ProductSize;
 import com.weavewhisper.entities.QManufacturer;
 import com.weavewhisper.entities.QProduct;
@@ -59,13 +62,12 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public ProductCreatedApiResponseDto addProduct(ProductRequestDto productRequestDto) {
 
-		if(productDao.existsByName(productRequestDto.getName())) {
+		if (productDao.existsByName(productRequestDto.getName())) {
 			throw new DuplicateProductNameException("Dupicate product name.");
 		}
 
 		Manufacturer manufacturer = manufacturerDao.findById(productRequestDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("No user found with that user id"));
-		
 
 		Product product = modelMapper.map(productRequestDto, Product.class);
 		System.out.println(productRequestDto);
@@ -104,6 +106,10 @@ public class ProductServiceImpl implements ProductService {
 			throw new ResourceNotFoundException("No product found with that id");
 		}
 
+		List<ReviewResponseDto> productReviews = product.getReviewList().stream()
+				.sorted((p1, p2) -> p1.getCreatedAt().compareTo(p2.getCreatedAt()))
+				.map(p -> modelMapper.map(p, ReviewResponseDto.class)).collect(Collectors.toList());
+
 		ProductResponseDto productResponseDto = modelMapper.map(product, ProductResponseDto.class);
 		productResponseDto
 				.setColors(product.getColorSet().stream().map(s -> s.getColor().name()).collect(Collectors.toSet()));
@@ -113,6 +119,7 @@ public class ProductServiceImpl implements ProductService {
 				.setImageNames(product.getImageList().stream().map(p -> p.getImageName()).collect(Collectors.toList()));
 
 		productResponseDto.setBrandName(product.getManufacturer().getBrandName());
+		productResponseDto.setProductReviews(productReviews);
 
 		return productResponseDto;
 	}
@@ -232,7 +239,8 @@ public class ProductServiceImpl implements ProductService {
 			productList = productList.stream().sorted((p1, p2) -> p1.getSellingPrice().compareTo(p2.getSellingPrice()))
 					.collect(Collectors.toList());
 		} else if (searchProductDto.getSortBy().equals("PRICE_DESC")) {
-			productList = productList.stream().sorted((p1, p2) -> (-1)*p1.getSellingPrice().compareTo(p2.getSellingPrice()))
+			productList = productList.stream()
+					.sorted((p1, p2) -> (-1) * p1.getSellingPrice().compareTo(p2.getSellingPrice()))
 					.collect(Collectors.toList());
 		}
 
@@ -272,17 +280,41 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<String> getAllProductSizes() {
-		return Arrays.asList(SizeType.values()).stream().map(s->s.name()).collect(Collectors.toList());
+		return Arrays.asList(SizeType.values()).stream().map(s -> s.name()).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<String> getAllProductColors() {
-		return Arrays.asList(ColorType.values()).stream().map(s->s.name()).collect(Collectors.toList());
+		return Arrays.asList(ColorType.values()).stream().map(s -> s.name()).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<String> getAllProductCategories() {
-		return Arrays.asList(CategoryType.values()).stream().map(s->s.name()).collect(Collectors.toList());
+		return Arrays.asList(CategoryType.values()).stream().map(s -> s.name()).collect(Collectors.toList());
+	}
+
+	@Override
+	public ApiResponse addReview(ReviewResquestDto reviewResquestDto) {
+		Product product = productDao.findById(reviewResquestDto.getProductId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such product found with that id"));
+		product.addReview(modelMapper.map(reviewResquestDto, ProductReview.class));
+		return new ApiResponse(true, "Review successfully added.");
+	}
+
+	@Override
+	public List<ReviewResponseDto> getAllReviewsForAProduct(Long productId) {
+
+		Product product = productDao.findById(productId)
+				.orElseThrow(() -> new ResourceNotFoundException("No product found with that id"));
+		if (product.getManufacturer() == null) {
+			throw new ResourceNotFoundException("No product found with that id");
+		}
+
+		List<ReviewResponseDto> productReviews = product.getReviewList().stream()
+				.sorted((p1, p2) -> p1.getCreatedAt().compareTo(p2.getCreatedAt()))
+				.map(p -> modelMapper.map(p, ReviewResponseDto.class)).collect(Collectors.toList());
+
+		return productReviews;
 	}
 
 }

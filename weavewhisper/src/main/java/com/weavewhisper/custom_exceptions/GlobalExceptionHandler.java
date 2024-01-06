@@ -57,6 +57,11 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
 	}
 	
+	@ExceptionHandler(DuplicateWishListException.class)
+	public ResponseEntity<?> handleDuplicateWishListException(DuplicateWishListException e){
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
+	}
+	
 	@ExceptionHandler(DuplicateProductNameException.class)
 	public ResponseEntity<?> handleDuplicateProductNameException(DuplicateProductNameException e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));

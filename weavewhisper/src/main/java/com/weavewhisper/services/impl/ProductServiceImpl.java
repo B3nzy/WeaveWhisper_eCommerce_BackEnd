@@ -267,6 +267,7 @@ public class ProductServiceImpl implements ProductService {
 					ProductSearchResponseDto.class);
 			productSearchResponseDto.setImageName(product.getImageList().get(0).getImageName());
 			productSearchResponseDto.setBrandName(product.getManufacturer().getBrandName());
+			productSearchResponseDto.setReviewCount(product.getReviewList().size());
 			productSearchResponseDtoList.add(productSearchResponseDto);
 		}
 

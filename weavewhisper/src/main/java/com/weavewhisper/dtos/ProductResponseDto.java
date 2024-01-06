@@ -27,4 +27,5 @@ public class ProductResponseDto {
 	private Set<String> colors;
 	private Set<String> sizes;
 	private List<ReviewResponseDto> productReviews;
+	private double avgRating;
 }

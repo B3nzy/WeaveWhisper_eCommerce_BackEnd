@@ -72,14 +72,10 @@ public class ProductServiceImpl implements ProductService {
 				.orElseThrow(() -> new ResourceNotFoundException("No user found with that user id"));
 
 		Product product = modelMapper.map(productRequestDto, Product.class);
-		System.out.println(productRequestDto);
-		System.out.println(product);
 
 		ArrayList<String> colorList = productRequestDto.getColors();
 		ArrayList<String> sizeList = productRequestDto.getSizes();
 		ArrayList<String> imageList = productRequestDto.getImageNames();
-
-		System.out.println(colorList + " " + sizeList);
 
 		for (int i = 0; i < sizeList.size(); i++) {
 			product.addSize(new ProductSize(SizeType.valueOf(sizeList.get(i))));
@@ -126,6 +122,18 @@ public class ProductServiceImpl implements ProductService {
 
 		productResponseDto.setBrandName(product.getManufacturer().getBrandName());
 		productResponseDto.setProductReviews(productReviews);
+
+
+		if (product.getReviewList().size() != 0) {
+			int totalRating = 0;
+			for (int j = 0; j < product.getReviewList().size(); j++) {
+				totalRating += product.getReviewList().get(j).getRating();
+				System.out.println(totalRating);
+			}
+			productResponseDto.setAvgRating(totalRating /(double) product.getReviewList().size());
+		} else {
+			productResponseDto.setAvgRating(0);
+		}
 
 		return productResponseDto;
 	}
@@ -201,14 +209,12 @@ public class ProductServiceImpl implements ProductService {
 		if (searchProductDto.getBrandNames() == null || searchProductDto.getBrandNames().size() == 0) {
 			List<String> manufacturerNamesList = new ArrayList<>();
 			List<Manufacturer> manufacturerList = manufacturerDao.findAll();
-			System.out.println(manufacturerList.size());
 			for (int i = 0; i < manufacturerList.size(); i++) {
 				manufacturerNamesList.add(manufacturerList.get(i).getBrandName());
 			}
 			searchProductDto.setBrandNames(manufacturerNamesList);
 		}
 
-		System.out.println(searchProductDto);
 
 		QProduct qProduct = QProduct.product;
 		QProductColor productColor = QProductColor.productColor;
@@ -274,6 +280,19 @@ public class ProductServiceImpl implements ProductService {
 			productSearchResponseDto.setImageName(product.getImageList().get(0).getImageName());
 			productSearchResponseDto.setBrandName(product.getManufacturer().getBrandName());
 			productSearchResponseDto.setReviewCount(product.getReviewList().size());
+			
+
+			if (product.getReviewList().size() != 0) {
+				int totalRating = 0;
+				for (int j = 0; j < product.getReviewList().size(); j++) {
+					totalRating += product.getReviewList().get(j).getRating();
+					System.out.println(totalRating);
+				}
+				productSearchResponseDto.setAvgRating(totalRating /(double)  product.getReviewList().size());
+			} else {
+				productSearchResponseDto.setAvgRating(0);
+			}
+
 			productSearchResponseDtoList.add(productSearchResponseDto);
 		}
 

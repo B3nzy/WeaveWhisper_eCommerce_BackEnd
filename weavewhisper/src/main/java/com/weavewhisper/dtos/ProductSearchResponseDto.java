@@ -21,4 +21,5 @@ public class ProductSearchResponseDto {
 	private String brandName;
 	private String imageName;
 	private int reviewCount;
+	private double avgRating;
 }

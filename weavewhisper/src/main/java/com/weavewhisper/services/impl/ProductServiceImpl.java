@@ -107,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		List<ReviewResponseDto> productReviews = product.getReviewList().stream()
-				.sorted((p1, p2) -> p1.getCreatedAt().compareTo(p2.getCreatedAt()))
+				.sorted((p1, p2) ->(-1)* p1.getCreatedAt().compareTo(p2.getCreatedAt()))
 				.map(p -> modelMapper.map(p, ReviewResponseDto.class)).collect(Collectors.toList());
 
 		ProductResponseDto productResponseDto = modelMapper.map(product, ProductResponseDto.class);
@@ -312,7 +312,7 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		List<ReviewResponseDto> productReviews = product.getReviewList().stream()
-				.sorted((p1, p2) -> p1.getCreatedAt().compareTo(p2.getCreatedAt()))
+				.sorted((p1, p2) -> (-1)*p1.getCreatedAt().compareTo(p2.getCreatedAt()))
 				.map(p -> modelMapper.map(p, ReviewResponseDto.class)).collect(Collectors.toList());
 
 		return productReviews;

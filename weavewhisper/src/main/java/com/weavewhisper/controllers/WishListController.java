@@ -33,7 +33,7 @@ public class WishListController {
 		return ResponseEntity.status(HttpStatus.OK).body(wishListService.getAllWishListForCustomer(customerId));
 	}
 
-	@DeleteMapping("/delete")
+	@PostMapping("/delete")
 	public ResponseEntity<?> deleteWishList(@RequestBody WishListRequestDto wishListRequestDto) {
 		ApiResponse apiRes = wishListService.removeWishList(wishListRequestDto);
 		return ResponseEntity.status(HttpStatus.OK).body(apiRes);

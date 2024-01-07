@@ -26,6 +26,8 @@ import com.weavewhisper.dtos.ProductCreatedApiResponseDto;
 import com.weavewhisper.services.ManufacturerService;
 import com.weavewhisper.services.ProductService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -90,7 +92,7 @@ public class ProductController {
 	}
 	
 	@PostMapping("/addreview")
-	public ResponseEntity<?> addProductReview(@RequestBody ReviewResquestDto reviewResquestDto){
+	public ResponseEntity<?> addProductReview(@RequestBody @Valid ReviewResquestDto reviewResquestDto){
 		ApiResponse apiRes = productService.addReview(reviewResquestDto);
 		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
 	}

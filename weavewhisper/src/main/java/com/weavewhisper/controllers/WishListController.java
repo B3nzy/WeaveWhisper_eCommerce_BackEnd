@@ -44,4 +44,9 @@ public class WishListController {
 		WishListResponseDto wishListResponseDto = wishListService.checkIfInWishList(wishListRequestDto);
 		return ResponseEntity.status(HttpStatus.OK).body(wishListResponseDto);
 	}
+	
+	@GetMapping("/getproductids/customer/{customerId}")
+	public ResponseEntity<?> getAllProductIdsWishlistedPerCustomer(@PathVariable Long customerId) {
+		return ResponseEntity.status(HttpStatus.OK).body(wishListService.getAllProductIdsWishlistedPerCustomer(customerId));
+	}
 }

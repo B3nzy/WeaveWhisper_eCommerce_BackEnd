@@ -12,6 +12,8 @@ public interface WishListService {
 
 	List<ProductSearchResponseDto> getAllWishListForCustomer(Long customerId);
 
+	List<Long> getAllProductIdsWishlistedPerCustomer(Long customerId);
+
 	ApiResponse removeWishList(WishListRequestDto wishListRequestDto);
 
 	WishListResponseDto checkIfInWishList(WishListRequestDto wishListRequestDto);

@@ -123,14 +123,17 @@ public class ProductServiceImpl implements ProductService {
 		productResponseDto.setBrandName(product.getManufacturer().getBrandName());
 		productResponseDto.setProductReviews(productReviews);
 
+		int count = 0;
 
 		if (product.getReviewList().size() != 0) {
 			int totalRating = 0;
 			for (int j = 0; j < product.getReviewList().size(); j++) {
-				totalRating += product.getReviewList().get(j).getRating();
-				System.out.println(totalRating);
+				if (product.getReviewList().get(j).getRating() != 0) {
+					totalRating += product.getReviewList().get(j).getRating();
+					count++;
+				}
 			}
-			productResponseDto.setAvgRating(totalRating /(double) product.getReviewList().size());
+			productResponseDto.setAvgRating(totalRating / (double) count);
 		} else {
 			productResponseDto.setAvgRating(0);
 		}
@@ -215,7 +218,6 @@ public class ProductServiceImpl implements ProductService {
 			searchProductDto.setBrandNames(manufacturerNamesList);
 		}
 
-
 		QProduct qProduct = QProduct.product;
 		QProductColor productColor = QProductColor.productColor;
 		QProductSize productSize = QProductSize.productSize;
@@ -280,15 +282,18 @@ public class ProductServiceImpl implements ProductService {
 			productSearchResponseDto.setImageName(product.getImageList().get(0).getImageName());
 			productSearchResponseDto.setBrandName(product.getManufacturer().getBrandName());
 			productSearchResponseDto.setReviewCount(product.getReviewList().size());
-			
+
+			int count = 0;
 
 			if (product.getReviewList().size() != 0) {
 				int totalRating = 0;
 				for (int j = 0; j < product.getReviewList().size(); j++) {
-					totalRating += product.getReviewList().get(j).getRating();
-					System.out.println(totalRating);
+					if (product.getReviewList().get(j).getRating() != 0) {
+						totalRating += product.getReviewList().get(j).getRating();
+						count++;
+					}
 				}
-				productSearchResponseDto.setAvgRating(totalRating /(double)  product.getReviewList().size());
+				productSearchResponseDto.setAvgRating(totalRating / (double) count);
 			} else {
 				productSearchResponseDto.setAvgRating(0);
 			}

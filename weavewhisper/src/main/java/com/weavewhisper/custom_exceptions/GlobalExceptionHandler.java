@@ -25,18 +25,7 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
 	}
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-		Map<String, String> hashMap = new HashMap<>();
-
-		e.getBindingResult().getAllErrors().forEach(error -> {
-			String fieldName = ((FieldError) error).getField();
-			String message = error.getDefaultMessage();
-			hashMap.put(fieldName, message);
-		});
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hashMap);
-	}
-
+	
 	@ExceptionHandler(IncorrectResultSizeDataAccessException.class)
 	private ResponseEntity<?> handleIncorrectResultSizeDataAccessException(IncorrectResultSizeDataAccessException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
@@ -66,6 +55,19 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<?> handleDuplicateProductNameException(DuplicateProductNameException e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
 	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+		Map<String, String> hashMap = new HashMap<>();
+
+		e.getBindingResult().getAllErrors().forEach(error -> {
+			String fieldName = ((FieldError) error).getField();
+			String message = error.getDefaultMessage();
+			hashMap.put(fieldName, message);
+		});
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hashMap);
+	}
+
 	
 	@ExceptionHandler(InvalidDataAccessApiUsageException.class)
 	public ResponseEntity<?> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException e) {

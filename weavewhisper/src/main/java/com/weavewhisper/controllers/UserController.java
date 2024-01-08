@@ -55,7 +55,7 @@ public class UserController {
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<?> updateUser(@RequestBody @Valid RegisterUserDto user) {
+	public ResponseEntity<?> updateUser(@RequestBody RegisterUserDto user) {
 		if (user.getType().equals(UserType.CUSTOMER)) {
 			UserResponseDto userResponseDto = customerService.updateCustomer(user);
 			return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);

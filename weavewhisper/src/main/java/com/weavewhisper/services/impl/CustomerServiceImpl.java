@@ -2,6 +2,7 @@ package com.weavewhisper.services.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.weavewhisper.custom_exceptions.DuplicateEmailException;
@@ -28,13 +29,20 @@ public class CustomerServiceImpl implements CustomerService {
 	
 	@Autowired
 	private UserDao userDao;
+	
+	@Value("${balance.starting-balance}")
+	private double firstTimeRegisterOffer;
 
 	@Override
 	public void registerCustomer(RegisterUserDto customerDto) {
+		
+		System.out.println(firstTimeRegisterOffer);
+		
 		if(userDao.existsByEmail(customerDto.getEmail())) {
 			throw new DuplicateEmailException("User with this email already exists!");
 		} else {			
 			Customer customer = modelMapper.map(customerDto, Customer.class);
+			customer.setBalance(firstTimeRegisterOffer);
 			customerDao.save(customer);
 		}
 	}

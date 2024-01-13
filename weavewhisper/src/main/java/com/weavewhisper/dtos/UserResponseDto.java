@@ -17,4 +17,5 @@ public class UserResponseDto {
 	private String phoneNumber;
 	private String address;
 	private String brandName;
+	private double balance;
 }

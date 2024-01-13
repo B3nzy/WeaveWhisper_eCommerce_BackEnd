@@ -1,5 +1,7 @@
 package com.weavewhisper.entities;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.weavewhisper.enums.UserType;
 
 import jakarta.persistence.Column;
@@ -24,6 +26,9 @@ public class Customer extends BaseUser {
 	@Column(length = 10)
 	private String phoneNumber;
 	private String address;
+
+	private double balance = 0;
+	
 
 	public Customer(String email, String password, UserType type, String fullName, String phoneNumber,
 			String address) {

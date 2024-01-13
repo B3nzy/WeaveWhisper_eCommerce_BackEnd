@@ -26,21 +26,21 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@Autowired
 	private UserDao userDao;
-	
+
 	@Value("${balance.starting-balance}")
 	private double firstTimeRegisterOffer;
 
 	@Override
 	public void registerCustomer(RegisterUserDto customerDto) {
-		
+
 		System.out.println(firstTimeRegisterOffer);
-		
-		if(userDao.existsByEmail(customerDto.getEmail())) {
+
+		if (userDao.existsByEmail(customerDto.getEmail())) {
 			throw new DuplicateEmailException("User with this email already exists!");
-		} else {			
+		} else {
 			Customer customer = modelMapper.map(customerDto, Customer.class);
 			customer.setBalance(firstTimeRegisterOffer);
 			customerDao.save(customer);
@@ -62,6 +62,13 @@ public class CustomerServiceImpl implements CustomerService {
 		} else {
 			throw new UnauthorizedException("Wrong password");
 		}
+	}
+
+	@Override
+	public double getBalance(Long userId) {
+		Customer customer = customerDao.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
+		return customer.getBalance();
 	}
 
 }

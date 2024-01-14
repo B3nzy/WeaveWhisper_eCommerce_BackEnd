@@ -16,19 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.AuthDto;
-import com.weavewhisper.dtos.BalanceResponseDto;
 import com.weavewhisper.dtos.ProductShortResponseDto;
 import com.weavewhisper.dtos.RegisterUserDto;
 import com.weavewhisper.dtos.UserResponseDto;
 import com.weavewhisper.enums.UserType;
-import com.weavewhisper.repositories.CustomerDao;
 import com.weavewhisper.services.CustomerService;
 import com.weavewhisper.services.ManufacturerService;
 import com.weavewhisper.services.UserService;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/api/users")
@@ -88,11 +84,5 @@ public class UserController {
 		List<ProductShortResponseDto> productShortResponseDto = manufacturerService.getAllProducts(manufacturerId);
 		return ResponseEntity.status(HttpStatus.OK).body(productShortResponseDto);
 	}
-	
-	@GetMapping("/balance/user/{userId}")
-	public ResponseEntity<?> getMethodName(@PathVariable Long userId) {
-		double bal = customerService.getBalance(userId);
-		return ResponseEntity.status(HttpStatus.OK).body(new BalanceResponseDto(true, bal));
-	}
-	
+
 }

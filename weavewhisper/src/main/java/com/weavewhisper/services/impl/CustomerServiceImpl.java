@@ -64,11 +64,4 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 	}
 
-	@Override
-	public double getBalance(Long userId) {
-		Customer customer = customerDao.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
-		return customer.getBalance();
-	}
-
 }

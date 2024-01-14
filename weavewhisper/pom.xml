@@ -65,6 +65,12 @@
 			<version>1.12.629</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.razorpay</groupId>
+			<artifactId>razorpay-java</artifactId>
+			<version>1.4.4</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>com.querydsl</groupId>

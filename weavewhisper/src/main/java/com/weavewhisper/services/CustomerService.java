@@ -6,5 +6,4 @@ import com.weavewhisper.dtos.UserResponseDto;
 public interface CustomerService {
 	void registerCustomer(RegisterUserDto customer);
 	UserResponseDto updateCustomer(RegisterUserDto user);
-	double getBalance(Long userId);
 }

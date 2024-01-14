@@ -10,4 +10,5 @@ public interface WalletService {
 	double getBalance(Long userId);
 	AddBalanceResponseDto addBalanceRequest(AddBalanceRequestDto addBalanceRequestDto) throws RazorpayException;
 	ApiResponse addBalanceSuccess(PaymentSuccessRequestDto paymentSuccessRequestDto) throws RazorpayException;
+	ApiResponse addBalanceFalure(PaymentSuccessRequestDto paymentSuccessRequestDto) throws RazorpayException;
 }

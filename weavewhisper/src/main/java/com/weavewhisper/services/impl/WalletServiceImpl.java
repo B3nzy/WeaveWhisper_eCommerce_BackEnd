@@ -12,6 +12,7 @@ import com.razorpay.Order;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import com.razorpay.Refund;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.AddBalanceRequestDto;
 import com.weavewhisper.dtos.AddBalanceResponseDto;
@@ -105,6 +106,19 @@ public class WalletServiceImpl implements WalletService {
 		customer.setBalance(customer.getBalance()+amount);
 
 		return new ApiResponse(true, "Amount successfully added to your account.");
+	}
+
+	@Override
+	public ApiResponse addBalanceFalure(PaymentSuccessRequestDto paymentSuccessRequestDto) throws RazorpayException {
+		RazorpayClient razorpayClient = new RazorpayClient(keyId, secret);
+		
+		JSONObject refundRequest = new JSONObject();
+		refundRequest.put("payment_id", paymentSuccessRequestDto.getRazorpay_payment_id());
+		Refund refund = razorpayClient.payments.refund(refundRequest);
+		
+		System.out.println(refund);
+
+		return new ApiResponse(true, "Refund is being processed. Any amount deducted from your account will get refunded withing 4-7 business days.");
 	}
 
 }

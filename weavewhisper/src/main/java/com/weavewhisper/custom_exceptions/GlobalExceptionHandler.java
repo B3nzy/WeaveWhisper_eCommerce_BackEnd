@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.razorpay.RazorpayException;
 import com.weavewhisper.dtos.ApiResponse;
 
 @RestControllerAdvice
@@ -54,6 +55,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(DuplicateProductNameException.class)
 	public ResponseEntity<?> handleDuplicateProductNameException(DuplicateProductNameException e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
+	}
+	
+	@ExceptionHandler(RazorpayException.class)
+	public ResponseEntity<?> handleRazorpayException(RazorpayException e){
+		System.out.println(e);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)

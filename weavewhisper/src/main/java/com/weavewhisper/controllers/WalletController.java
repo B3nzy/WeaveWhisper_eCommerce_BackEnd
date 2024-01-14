@@ -47,4 +47,11 @@ public class WalletController {
 		return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
 	}
 
+	@PostMapping("/addfailure")
+	public ResponseEntity<?> handleAddBalanceFailure(
+			@RequestBody @Valid PaymentSuccessRequestDto paymentSuccessRequestDto) throws RazorpayException {
+		ApiResponse apiResponse = walletService.addBalanceFalure(paymentSuccessRequestDto);
+		return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+	}
+
 }

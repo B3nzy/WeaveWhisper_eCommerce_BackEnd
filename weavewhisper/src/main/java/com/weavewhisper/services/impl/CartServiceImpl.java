@@ -1,5 +1,8 @@
 package com.weavewhisper.services.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,9 +10,12 @@ import org.springframework.stereotype.Service;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.CartRequestDto;
+import com.weavewhisper.dtos.CartResponseDto;
 import com.weavewhisper.entities.Cart;
 import com.weavewhisper.entities.Customer;
 import com.weavewhisper.entities.Product;
+import com.weavewhisper.enums.CategoryType;
+import com.weavewhisper.enums.GenderType;
 import com.weavewhisper.repositories.CartDao;
 import com.weavewhisper.repositories.CustomerDao;
 import com.weavewhisper.repositories.ProductDao;
@@ -50,12 +56,38 @@ public class CartServiceImpl implements CartService {
 	public ApiResponse removeCart(Long CartId, Long customerId) {
 		Customer customer = customerDao.findById(customerId)
 				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
-		if(cartDao.existsByIdAndCustomerRef(CartId, customer)) {
-			cartDao.deleteById(CartId);;
+		if (cartDao.existsByIdAndCustomerRef(CartId, customer)) {
+			cartDao.deleteById(CartId);
+			;
 			return new ApiResponse(true, "Product successfully deleted from the cart.");
 		} else {
 			throw new ResourceNotFoundException("No such product exists with that cart id.");
 		}
+	}
+
+	@Override
+	public List<CartResponseDto> getCartItemsForCustomer(Long customerId) {
+		Customer customer = customerDao.findById(customerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
+
+		List<Cart> cartList = cartDao.findByCustomerRef(customer);
+
+		List<CartResponseDto> cartResList = new ArrayList<>();
+		cartList.forEach(c -> {
+			boolean isActive = true;
+			if (c.getProductRef().getManufacturer() == null) {
+				isActive = false;
+			}
+			CartResponseDto cartResponseDto = modelMapper.map(c.getProductRef(), CartResponseDto.class);
+			System.out.println(cartResponseDto);
+			cartResponseDto.setActive(isActive);
+			cartResponseDto.setImageName(c.getProductRef().getImageList().get(0).getImageName());
+
+			cartResList.add(cartResponseDto);
+
+		});
+
+		return cartResList;
 	}
 
 }

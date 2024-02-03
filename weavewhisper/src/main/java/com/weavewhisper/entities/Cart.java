@@ -2,10 +2,13 @@ package com.weavewhisper.entities;
 
 import java.time.LocalDateTime;
 
+import com.weavewhisper.enums.ColorType;
+import com.weavewhisper.enums.SizeType;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,12 +16,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "wishlists")
+@Table(name = "cart")
 @Getter
 @Setter
 @ToString(callSuper = true, exclude = {})
 @NoArgsConstructor
-public class WishList extends BaseEntity {
+public class Cart extends BaseEntity {
 
 	private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -29,11 +32,9 @@ public class WishList extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "customer_id", nullable = false, unique = false)
 	private Customer customerRef;
-
-	public WishList(Product productRef, Customer customerRef) {
-		super();
-		this.productRef = productRef;
-		this.customerRef = customerRef;
-	}
+	
+	private ColorType color;
+	
+	private SizeType size;
 
 }

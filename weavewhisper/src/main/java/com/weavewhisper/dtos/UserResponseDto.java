@@ -18,4 +18,5 @@ public class UserResponseDto {
 	private String address;
 	private String brandName;
 	private double balance;
+	private int cartCount;
 }

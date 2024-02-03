@@ -46,7 +46,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true, exclude = { "sizeSet", "colorSet", "imageList", "reviewList" })
+@ToString(callSuper = true, exclude = { "sizeSet", "colorSet", "imageList", "reviewList", "manufacturer" })
 public class Product extends BaseEntity {
 
 	@Column(nullable = false, unique = true)

@@ -5,7 +5,10 @@ import java.time.LocalDateTime;
 import com.weavewhisper.enums.ColorType;
 import com.weavewhisper.enums.SizeType;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
@@ -33,8 +36,12 @@ public class Cart extends BaseEntity {
 	@JoinColumn(name = "customer_id", nullable = false, unique = false)
 	private Customer customerRef;
 	
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private ColorType color;
 	
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private SizeType size;
 
 }

@@ -7,5 +7,5 @@ public interface CartService {
 
 	ApiResponse addCart(CartRequestDto cartRequestDto);
 
-	ApiResponse removeCart(Long CartId);
+	ApiResponse removeCart(Long CartId, Long customerId);
 }

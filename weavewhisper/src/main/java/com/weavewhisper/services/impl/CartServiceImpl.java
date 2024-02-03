@@ -17,7 +17,6 @@ import com.weavewhisper.services.CartService;
 
 import jakarta.transaction.Transactional;
 
-
 @Service
 @Transactional
 public class CartServiceImpl implements CartService {
@@ -48,9 +47,15 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public ApiResponse removeCart(Long CartId) {
-		// TODO Auto-generated method stub
-		return null;
+	public ApiResponse removeCart(Long CartId, Long customerId) {
+		Customer customer = customerDao.findById(customerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
+		if(cartDao.existsByIdAndCustomerRef(CartId, customer)) {
+			cartDao.deleteById(CartId);;
+			return new ApiResponse(true, "Product successfully deleted from the cart.");
+		} else {
+			throw new ResourceNotFoundException("No such product exists with that cart id.");
+		}
 	}
 
 }

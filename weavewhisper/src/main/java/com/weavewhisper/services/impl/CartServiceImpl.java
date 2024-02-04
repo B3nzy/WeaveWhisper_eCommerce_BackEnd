@@ -75,13 +75,19 @@ public class CartServiceImpl implements CartService {
 		List<CartResponseDto> cartResList = new ArrayList<>();
 		cartList.forEach(c -> {
 			boolean isActive = true;
+			CartResponseDto cartResponseDto = modelMapper.map(c.getProductRef(), CartResponseDto.class);
 			if (c.getProductRef().getManufacturer() == null) {
 				isActive = false;
+			} else {
+				cartResponseDto.setBrandName(c.getProductRef().getManufacturer().getBrandName());
 			}
-			CartResponseDto cartResponseDto = modelMapper.map(c.getProductRef(), CartResponseDto.class);
+			
 			System.out.println(cartResponseDto);
 			cartResponseDto.setActive(isActive);
 			cartResponseDto.setImageName(c.getProductRef().getImageList().get(0).getImageName());
+			cartResponseDto.setColor(c.getColor());
+			cartResponseDto.setSize(c.getSize());
+			cartResponseDto.setProductId(c.getProductRef().getId());
 
 			cartResList.add(cartResponseDto);
 

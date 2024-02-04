@@ -1,7 +1,9 @@
 package com.weavewhisper.dtos;
 
 import com.weavewhisper.enums.CategoryType;
+import com.weavewhisper.enums.ColorType;
 import com.weavewhisper.enums.GenderType;
+import com.weavewhisper.enums.SizeType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,9 +17,11 @@ public class CartResponseDto {
 	private String name;
 	private double actualPrice;
 	private double sellingPrice;
-	private GenderType gender;
-	private CategoryType category;
 	private String imageName;
 	private boolean active;
 	private int inventoryCount;
+	private String brandName;
+	private SizeType size;
+	private ColorType color;
+	private Long productId;
 }

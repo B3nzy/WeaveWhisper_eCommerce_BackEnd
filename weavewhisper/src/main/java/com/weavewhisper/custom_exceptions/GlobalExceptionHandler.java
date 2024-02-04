@@ -26,7 +26,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
 	}
 
-	
 	@ExceptionHandler(IncorrectResultSizeDataAccessException.class)
 	private ResponseEntity<?> handleIncorrectResultSizeDataAccessException(IncorrectResultSizeDataAccessException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
@@ -46,23 +45,28 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<?> handleDuplicateEmailException(DuplicateEmailException e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
 	}
-	
+
 	@ExceptionHandler(DuplicateWishListException.class)
-	public ResponseEntity<?> handleDuplicateWishListException(DuplicateWishListException e){
+	public ResponseEntity<?> handleDuplicateWishListException(DuplicateWishListException e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
 	}
-	
+
 	@ExceptionHandler(DuplicateProductNameException.class)
 	public ResponseEntity<?> handleDuplicateProductNameException(DuplicateProductNameException e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
 	}
-	
+
+	@ExceptionHandler(IllegalCartItemException.class)
+	public ResponseEntity<?> handleIllegalCartItemException(IllegalCartItemException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+	}
+
 	@ExceptionHandler(RazorpayException.class)
-	public ResponseEntity<?> handleRazorpayException(RazorpayException e){
+	public ResponseEntity<?> handleRazorpayException(RazorpayException e) {
 		System.out.println(e);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
 	}
-	
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		Map<String, String> hashMap = new HashMap<>();
@@ -75,7 +79,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hashMap);
 	}
 
-	
 	@ExceptionHandler(InvalidDataAccessApiUsageException.class)
 	public ResponseEntity<?> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));

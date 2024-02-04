@@ -3,14 +3,23 @@ package com.weavewhisper.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import com.weavewhisper.custom_exceptions.IllegalCartItemException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
+import com.weavewhisper.dtos.AddBalanceResponseDto;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.CartRequestDto;
 import com.weavewhisper.dtos.CartResponseDto;
+import com.weavewhisper.dtos.PlaceOrderRequestDto;
+import com.weavewhisper.dtos.PlaceOrderResponseDto;
 import com.weavewhisper.entities.Cart;
 import com.weavewhisper.entities.Customer;
 import com.weavewhisper.entities.Product;
@@ -39,6 +48,12 @@ public class CartServiceImpl implements CartService {
 	@Autowired
 	private CustomerDao customerDao;
 
+	@Value("${razorpay.key_id}")
+	private String keyId;
+
+	@Value("${razorpay.key_secret}")
+	private String secret;
+
 	@Override
 	public ApiResponse addCart(CartRequestDto cartRequestDto) {
 		Cart cart = modelMapper.map(cartRequestDto, Cart.class);
@@ -59,7 +74,7 @@ public class CartServiceImpl implements CartService {
 		if (cartDao.existsByIdAndCustomerRef(CartId, customer)) {
 			cartDao.deleteById(CartId);
 			;
-			return new ApiResponse(true, "Product successfully deleted from the cart.");
+			return new ApiResponse(true, "Product successfully removed from the cart.");
 		} else {
 			throw new ResourceNotFoundException("No such product exists with that cart id.");
 		}
@@ -81,7 +96,7 @@ public class CartServiceImpl implements CartService {
 			} else {
 				cartResponseDto.setBrandName(c.getProductRef().getManufacturer().getBrandName());
 			}
-			
+
 			System.out.println(cartResponseDto);
 			cartResponseDto.setActive(isActive);
 			cartResponseDto.setImageName(c.getProductRef().getImageList().get(0).getImageName());
@@ -95,6 +110,58 @@ public class CartServiceImpl implements CartService {
 		});
 
 		return cartResList;
+	}
+
+	@Override
+	public PlaceOrderResponseDto handlePlaceOrderRequest(PlaceOrderRequestDto placeOrderRequestDto) throws RazorpayException {		
+		Customer customer = customerDao.findById(placeOrderRequestDto.getCustomerId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
+		
+		String reciept = "order#" + System.currentTimeMillis();
+
+		RazorpayClient razorpayClient = new RazorpayClient(keyId, secret);
+		
+		List<Cart> cartList = cartDao.findByCustomerRef(customer);
+		
+		double price = 0;
+		
+		for(int i=0; i<cartList.size();i++) {
+			Cart c = cartList.get(i);
+			if(c.getProductRef().getManufacturer() == null) {
+				throw new IllegalCartItemException("Some product from your cart doesnt exists anymore.");
+			} else if(c.getProductRef().getInventoryCount()==0) {
+				throw new IllegalCartItemException("Some product from your cart is already sold out.");
+			} 
+			price += c.getProductRef().getSellingPrice();
+			
+		};
+		
+		JSONObject orderRequest = new JSONObject();
+		orderRequest.put("amount", price * 100);
+		orderRequest.put("currency", "INR");
+		orderRequest.put("receipt", reciept);
+
+		JSONObject notes = new JSONObject();
+		notes.put("id", customer.getId());
+		notes.put("email", customer.getEmail());
+		notes.put("fullName", customer.getFullName());
+		notes.put("address", customer.getAddress());
+		notes.put("reciept", reciept);
+		
+		orderRequest.put("notes", notes);
+
+		Order order = razorpayClient.orders.create(orderRequest);
+
+		System.out.println(order);
+
+		
+		String orderId = order.get("id");
+
+		PlaceOrderResponseDto placeOrderResponseDto = new PlaceOrderResponseDto();
+		placeOrderResponseDto.setOrderId(orderId);
+		placeOrderResponseDto.setTotalAmount(price);
+		placeOrderResponseDto.setSuccess(true);
+		return placeOrderResponseDto;
 	}
 
 }

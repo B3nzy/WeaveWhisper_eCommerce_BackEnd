@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.razorpay.RazorpayException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.CartRequestDto;
 import com.weavewhisper.dtos.CartResponseDto;
+import com.weavewhisper.dtos.PlaceOrderRequestDto;
+import com.weavewhisper.dtos.PlaceOrderResponseDto;
 import com.weavewhisper.services.CartService;
 
 @RestController
@@ -24,6 +27,8 @@ public class CartController {
 
 	@Autowired
 	private CartService cartService;
+	
+	
 
 	@PostMapping("/add")
 	public ResponseEntity<?> addProductInCart(@RequestBody CartRequestDto cartRequestDto) {
@@ -42,6 +47,12 @@ public class CartController {
 	public ResponseEntity<?> getCartItems(@PathVariable Long customerId) {
 		List<CartResponseDto> cartResList = cartService.getCartItemsForCustomer(customerId);
 		return ResponseEntity.status(HttpStatus.OK).body(cartResList);
+	}
+	
+	@PostMapping("/placeorderrequest")
+	public ResponseEntity<?> handlePlaceOrderRequest(@RequestBody PlaceOrderRequestDto placeOrderRequestDto) throws RazorpayException{
+		PlaceOrderResponseDto placeOrderResponseDto = cartService.handlePlaceOrderRequest(placeOrderRequestDto);
+		return ResponseEntity.status(HttpStatus.OK).body(placeOrderResponseDto);
 	}
 
 }

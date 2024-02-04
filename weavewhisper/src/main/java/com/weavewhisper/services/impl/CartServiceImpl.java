@@ -88,6 +88,7 @@ public class CartServiceImpl implements CartService {
 			cartResponseDto.setColor(c.getColor());
 			cartResponseDto.setSize(c.getSize());
 			cartResponseDto.setProductId(c.getProductRef().getId());
+			cartResponseDto.setCartId(c.getId());
 
 			cartResList.add(cartResponseDto);
 

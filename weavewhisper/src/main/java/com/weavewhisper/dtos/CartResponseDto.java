@@ -13,7 +13,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class CartResponseDto {
-	private Long id;
+	private Long cartId;
 	private String name;
 	private double actualPrice;
 	private double sellingPrice;

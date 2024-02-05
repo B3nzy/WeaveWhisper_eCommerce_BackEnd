@@ -10,4 +10,5 @@ import lombok.ToString;
 public class PlaceOrderRequestDto {
 	private Long customerId;
 	private String address;
+	private String phoneNumber;
 }

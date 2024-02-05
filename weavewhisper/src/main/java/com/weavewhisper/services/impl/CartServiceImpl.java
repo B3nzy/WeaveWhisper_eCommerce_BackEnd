@@ -161,6 +161,7 @@ public class CartServiceImpl implements CartService {
 		notes.put("fullName", customer.getFullName());
 		notes.put("reciept", reciept);
 		notes.put("address", placeOrderRequestDto.getAddress());
+		notes.put("phoneNumber", placeOrderRequestDto.getPhoneNumber());
 
 		orderRequest.put("notes", notes);
 
@@ -176,7 +177,7 @@ public class CartServiceImpl implements CartService {
 		placeOrderResponseDto.setSuccess(true);
 		placeOrderResponseDto.setFullName(customer.getFullName());
 		placeOrderResponseDto.setAddress(placeOrderRequestDto.getAddress());
-		placeOrderResponseDto.setPhoneNumber(customer.getPhoneNumber());
+		placeOrderResponseDto.setPhoneNumber(placeOrderRequestDto.getPhoneNumber());
 		placeOrderResponseDto.setEmail(customer.getEmail());
 		return placeOrderResponseDto;
 	}

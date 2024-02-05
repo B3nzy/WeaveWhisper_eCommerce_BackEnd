@@ -16,6 +16,7 @@ import com.weavewhisper.custom_exceptions.IllegalCartItemException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.AddBalanceResponseDto;
 import com.weavewhisper.dtos.ApiResponse;
+import com.weavewhisper.dtos.CartCountResponseDto;
 import com.weavewhisper.dtos.CartRequestDto;
 import com.weavewhisper.dtos.CartResponseDto;
 import com.weavewhisper.dtos.PlaceOrderRequestDto;
@@ -68,6 +69,17 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
+	public CartCountResponseDto getCartCount(Long customerId) {
+		CartCountResponseDto cartCountResponseDto = new CartCountResponseDto();
+		Customer customer = customerDao.findById(customerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
+		List<Cart> cartList = cartDao.findByCustomerRef(customer);
+		cartCountResponseDto.setSuccess(true);
+		cartCountResponseDto.setCartCount(cartList.size());
+		return cartCountResponseDto;
+	}
+
+	@Override
 	public ApiResponse removeCart(Long CartId, Long customerId) {
 		Customer customer = customerDao.findById(customerId)
 				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
@@ -113,29 +125,31 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public PlaceOrderResponseDto handlePlaceOrderRequest(PlaceOrderRequestDto placeOrderRequestDto) throws RazorpayException {		
+	public PlaceOrderResponseDto handlePlaceOrderRequest(PlaceOrderRequestDto placeOrderRequestDto)
+			throws RazorpayException {
 		Customer customer = customerDao.findById(placeOrderRequestDto.getCustomerId())
 				.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
-		
+
 		String reciept = "order#" + System.currentTimeMillis();
 
 		RazorpayClient razorpayClient = new RazorpayClient(keyId, secret);
-		
+
 		List<Cart> cartList = cartDao.findByCustomerRef(customer);
-		
+
 		double price = 0;
-		
-		for(int i=0; i<cartList.size();i++) {
+
+		for (int i = 0; i < cartList.size(); i++) {
 			Cart c = cartList.get(i);
-			if(c.getProductRef().getManufacturer() == null) {
+			if (c.getProductRef().getManufacturer() == null) {
 				throw new IllegalCartItemException("Some product from your cart doesnt exists anymore.");
-			} else if(c.getProductRef().getInventoryCount()==0) {
+			} else if (c.getProductRef().getInventoryCount() == 0) {
 				throw new IllegalCartItemException("Some product from your cart is already sold out.");
-			} 
+			}
 			price += c.getProductRef().getSellingPrice();
-			
-		};
-		
+
+		}
+		;
+
 		JSONObject orderRequest = new JSONObject();
 		orderRequest.put("amount", price * 100);
 		orderRequest.put("currency", "INR");
@@ -147,14 +161,13 @@ public class CartServiceImpl implements CartService {
 		notes.put("fullName", customer.getFullName());
 		notes.put("reciept", reciept);
 		notes.put("address", placeOrderRequestDto.getAddress());
-		
+
 		orderRequest.put("notes", notes);
 
 		Order order = razorpayClient.orders.create(orderRequest);
 
 		System.out.println(order);
 
-		
 		String orderId = order.get("id");
 
 		PlaceOrderResponseDto placeOrderResponseDto = new PlaceOrderResponseDto();

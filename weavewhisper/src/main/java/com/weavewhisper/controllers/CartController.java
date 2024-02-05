@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.razorpay.RazorpayException;
 import com.weavewhisper.dtos.ApiResponse;
+import com.weavewhisper.dtos.CartCountResponseDto;
 import com.weavewhisper.dtos.CartRequestDto;
 import com.weavewhisper.dtos.CartResponseDto;
 import com.weavewhisper.dtos.PlaceOrderRequestDto;
@@ -28,6 +29,11 @@ public class CartController {
 	@Autowired
 	private CartService cartService;
 	
+	@GetMapping("/getcount/customer/{customerId}")
+	public ResponseEntity<?> getCartCount(@PathVariable Long customerId){
+		CartCountResponseDto cartCountResponseDto = cartService.getCartCount(customerId);
+		return ResponseEntity.status(HttpStatus.OK).body(cartCountResponseDto);
+	}
 	
 
 	@PostMapping("/add")

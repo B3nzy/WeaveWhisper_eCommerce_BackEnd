@@ -145,8 +145,8 @@ public class CartServiceImpl implements CartService {
 		notes.put("id", customer.getId());
 		notes.put("email", customer.getEmail());
 		notes.put("fullName", customer.getFullName());
-		notes.put("address", customer.getAddress());
 		notes.put("reciept", reciept);
+		notes.put("address", placeOrderRequestDto.getAddress());
 		
 		orderRequest.put("notes", notes);
 

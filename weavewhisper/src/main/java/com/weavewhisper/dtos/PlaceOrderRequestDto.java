@@ -9,4 +9,5 @@ import lombok.ToString;
 @ToString
 public class PlaceOrderRequestDto {
 	private Long customerId;
+	private String address;
 }

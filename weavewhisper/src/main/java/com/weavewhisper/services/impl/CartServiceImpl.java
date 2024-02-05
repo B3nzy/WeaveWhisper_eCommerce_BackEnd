@@ -174,6 +174,10 @@ public class CartServiceImpl implements CartService {
 		placeOrderResponseDto.setOrderId(orderId);
 		placeOrderResponseDto.setTotalAmount(price);
 		placeOrderResponseDto.setSuccess(true);
+		placeOrderResponseDto.setFullName(customer.getFullName());
+		placeOrderResponseDto.setAddress(placeOrderRequestDto.getAddress());
+		placeOrderResponseDto.setPhoneNumber(customer.getPhoneNumber());
+		placeOrderResponseDto.setEmail(customer.getEmail());
 		return placeOrderResponseDto;
 	}
 

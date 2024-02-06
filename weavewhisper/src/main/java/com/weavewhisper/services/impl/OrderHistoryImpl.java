@@ -123,7 +123,7 @@ public class OrderHistoryImpl implements OrderHistoryService {
 
 				customer.setBalance(customer.getBalance() + orderHistory.getSoldAtPrice());
 
-				return new ApiResponse(true, "Order cancelled successfully. Refund will be credited in your wallet.");
+				return new ApiResponse(true, "Order cancelled successfully. Refund will be credited to your wallet.");
 			} else {
 				throw new IllegalCancellationRequestException(
 						"You can only cancel your oder if it is in processing stage.");

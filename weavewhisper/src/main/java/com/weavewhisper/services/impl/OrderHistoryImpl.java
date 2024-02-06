@@ -12,14 +12,19 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.weavewhisper.custom_exceptions.IllegalCancellationRequestException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
+import com.weavewhisper.dtos.ApiResponse;
+import com.weavewhisper.dtos.CancelOrderRequestDto;
 import com.weavewhisper.dtos.OrderHistoryResponseDto;
 import com.weavewhisper.entities.Customer;
 import com.weavewhisper.entities.OrderHistory;
+import com.weavewhisper.entities.Product;
 import com.weavewhisper.enums.OrderReturnStatusType;
 import com.weavewhisper.enums.OrderStatusType;
 import com.weavewhisper.repositories.CustomerDao;
 import com.weavewhisper.repositories.OrderHistoryDao;
+import com.weavewhisper.repositories.ProductDao;
 import com.weavewhisper.services.OrderHistoryService;
 
 import jakarta.transaction.Transactional;
@@ -33,6 +38,9 @@ public class OrderHistoryImpl implements OrderHistoryService {
 
 	@Autowired
 	private OrderHistoryDao orderHistoryDao;
+
+	@Autowired
+	private ProductDao productDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -85,6 +93,32 @@ public class OrderHistoryImpl implements OrderHistoryService {
 		}
 
 		return orderHistoryResList;
+	}
+
+	@Override
+	public ApiResponse cancelOrder(CancelOrderRequestDto cancelOrderRequestDto) {
+		Product product = productDao.findById(cancelOrderRequestDto.getProductId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such product exists with that id."));
+		Customer customer = customerDao.findById(cancelOrderRequestDto.getCustomerId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
+		OrderHistory orderHistory = orderHistoryDao.findById(cancelOrderRequestDto.getOrderId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such order exists with that id."));
+
+		if (orderHistoryDao.existsByIdAndProductRefAndCustomerRef(cancelOrderRequestDto.getOrderId(), product,
+				customer)) {
+			if (orderHistory.getOrderStatus().equals(OrderStatusType.PROCESSING)) {
+				orderHistory.setOrderStatus(OrderStatusType.CANCELLED);
+				product.setInventoryCount(product.getInventoryCount() + 1);
+				return new ApiResponse(true, "Order cancelled successfully.");
+			} else {
+				throw new IllegalCancellationRequestException(
+						"You can only cancel your oder if it is in processing stage.");
+			}
+
+		} else {
+			throw new ResourceNotFoundException("No order exists with that id.");
+		}
+
 	}
 
 }

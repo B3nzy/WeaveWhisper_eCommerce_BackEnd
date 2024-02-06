@@ -7,9 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.weavewhisper.dtos.ApiResponse;
+import com.weavewhisper.dtos.CancelOrderRequestDto;
 import com.weavewhisper.dtos.OrderHistoryResponseDto;
 import com.weavewhisper.services.OrderHistoryService;
 
@@ -24,6 +28,12 @@ public class OrderHistoryController {
 	public ResponseEntity<?> getCustomerOrderHistory(@PathVariable Long customerId) {
 		List<OrderHistoryResponseDto> oHistResList = orderHistoryService.getOrderHistoryOfCustomer(customerId);
 		return ResponseEntity.status(HttpStatus.OK).body(oHistResList);
+	}
+	
+	@PostMapping("/cancelorder")
+	public ResponseEntity<?> handleCancelOrder(@RequestBody CancelOrderRequestDto cancelOrderRequestDto){
+		ApiResponse apiRes = orderHistoryService.cancelOrder(cancelOrderRequestDto);
+		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
 	}
 
 }

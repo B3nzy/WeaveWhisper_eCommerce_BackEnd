@@ -7,6 +7,7 @@ import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.CartCountResponseDto;
 import com.weavewhisper.dtos.CartRequestDto;
 import com.weavewhisper.dtos.CartResponseDto;
+import com.weavewhisper.dtos.PaymentSuccessRequestDto;
 import com.weavewhisper.dtos.PlaceOrderRequestDto;
 import com.weavewhisper.dtos.PlaceOrderResponseDto;
 
@@ -21,4 +22,6 @@ public interface CartService {
 	ApiResponse removeCart(Long CartId, Long customerId);
 
 	PlaceOrderResponseDto handlePlaceOrderRequest(PlaceOrderRequestDto placeOrderRequestDto) throws RazorpayException;
+	
+	ApiResponse handlePlaceOrderSuccess(PaymentSuccessRequestDto paymentSuccessRequestDto) throws RazorpayException;
 }

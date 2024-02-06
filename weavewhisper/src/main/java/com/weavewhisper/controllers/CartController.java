@@ -18,9 +18,12 @@ import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.CartCountResponseDto;
 import com.weavewhisper.dtos.CartRequestDto;
 import com.weavewhisper.dtos.CartResponseDto;
+import com.weavewhisper.dtos.PaymentSuccessRequestDto;
 import com.weavewhisper.dtos.PlaceOrderRequestDto;
 import com.weavewhisper.dtos.PlaceOrderResponseDto;
 import com.weavewhisper.services.CartService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -60,5 +63,14 @@ public class CartController {
 		PlaceOrderResponseDto placeOrderResponseDto = cartService.handlePlaceOrderRequest(placeOrderRequestDto);
 		return ResponseEntity.status(HttpStatus.OK).body(placeOrderResponseDto);
 	}
+	
+	@PostMapping("/placeordersuccess")
+	public ResponseEntity<?> handlePlaceOrderSuccess(
+			@RequestBody @Valid PaymentSuccessRequestDto paymentSuccessRequestDto) throws RazorpayException {
+		ApiResponse apiResponse = cartService.handlePlaceOrderSuccess(paymentSuccessRequestDto);
+		return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+	}
+	
+	// TODO need to create an api for place order failure.
 
 }

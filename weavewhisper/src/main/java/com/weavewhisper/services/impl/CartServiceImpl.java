@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.razorpay.Order;
+import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.weavewhisper.custom_exceptions.IllegalCartItemException;
@@ -19,15 +20,19 @@ import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.CartCountResponseDto;
 import com.weavewhisper.dtos.CartRequestDto;
 import com.weavewhisper.dtos.CartResponseDto;
+import com.weavewhisper.dtos.PaymentSuccessRequestDto;
 import com.weavewhisper.dtos.PlaceOrderRequestDto;
 import com.weavewhisper.dtos.PlaceOrderResponseDto;
 import com.weavewhisper.entities.Cart;
 import com.weavewhisper.entities.Customer;
+import com.weavewhisper.entities.OrderHistory;
 import com.weavewhisper.entities.Product;
 import com.weavewhisper.enums.CategoryType;
 import com.weavewhisper.enums.GenderType;
+import com.weavewhisper.enums.PaymentType;
 import com.weavewhisper.repositories.CartDao;
 import com.weavewhisper.repositories.CustomerDao;
+import com.weavewhisper.repositories.OrderHistoryDao;
 import com.weavewhisper.repositories.ProductDao;
 import com.weavewhisper.services.CartService;
 
@@ -48,6 +53,9 @@ public class CartServiceImpl implements CartService {
 
 	@Autowired
 	private CustomerDao customerDao;
+	
+	@Autowired
+	private OrderHistoryDao orderHistoryDao;
 
 	@Value("${razorpay.key_id}")
 	private String keyId;
@@ -138,6 +146,8 @@ public class CartServiceImpl implements CartService {
 
 		double price = 0;
 
+		List<Long> cartIdList = new ArrayList<>();
+
 		for (int i = 0; i < cartList.size(); i++) {
 			Cart c = cartList.get(i);
 			if (c.getProductRef().getManufacturer() == null) {
@@ -146,7 +156,7 @@ public class CartServiceImpl implements CartService {
 				throw new IllegalCartItemException("Some product from your cart is already sold out.");
 			}
 			price += c.getProductRef().getSellingPrice();
-
+			cartIdList.add(c.getId());
 		}
 		;
 
@@ -162,6 +172,7 @@ public class CartServiceImpl implements CartService {
 		notes.put("reciept", reciept);
 		notes.put("address", placeOrderRequestDto.getAddress());
 		notes.put("phoneNumber", placeOrderRequestDto.getPhoneNumber());
+//		notes.put("cartIdList", cartIdList);
 
 		orderRequest.put("notes", notes);
 
@@ -182,4 +193,62 @@ public class CartServiceImpl implements CartService {
 		return placeOrderResponseDto;
 	}
 
+	@Override
+	@Transactional
+	public ApiResponse handlePlaceOrderSuccess(PaymentSuccessRequestDto paymentSuccessRequestDto)
+			throws RazorpayException {
+
+		RazorpayClient razorpayClient = new RazorpayClient(keyId, secret);
+
+//		Order order = razorpayClient.orders.fetch(paymentSuccessRequestDto.getRazorpay_order_id());
+//		
+//		System.out.println(order);
+
+		Payment payment = razorpayClient.payments.fetch(paymentSuccessRequestDto.getRazorpay_payment_id());
+		System.out.println(payment);
+
+		int amount = payment.get("amount");
+		amount /= 100;
+
+//		notes.put("id", customer.getId());
+//		notes.put("email", customer.getEmail());
+//		notes.put("fullName", customer.getFullName());
+//		notes.put("reciept", reciept);
+//		notes.put("address", placeOrderRequestDto.getAddress());
+//		notes.put("phoneNumber", placeOrderRequestDto.getPhoneNumber());
+//		notes.put("cartIdList", cartIdList);
+
+		JSONObject notes = payment.get("notes");
+		Long customerId = notes.getLong("id");
+		String customerEmail = notes.getString("email");
+		String reciept = notes.getString("reciept");
+		String phoneNumber = notes.getString("phoneNumber");
+		String address = notes.getString("address");
+
+		Customer customer = customerDao.findById(customerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
+
+		List<Cart> cartList = cartDao.findByCustomerRef(customer);
+
+		for(int i=0;i<cartList.size();i++) {
+			Cart c = cartList.get(i);
+			OrderHistory orderHistory = new OrderHistory();
+			orderHistory.setCustomerRef(customer);
+			orderHistory.setProductRef(c.getProductRef());
+			orderHistory.setColor(c.getColor());
+			orderHistory.setSize(c.getSize());
+			orderHistory.setPaymentType(PaymentType.RAZORPAY);
+			orderHistory.setAddress(address);
+			orderHistory.setPhoneNumber(phoneNumber);
+			orderHistory.setReceipt(reciept);
+			orderHistory.setRazorpayOrderId(paymentSuccessRequestDto.getRazorpay_order_id());
+			orderHistory.setRazorpayPaymentId(paymentSuccessRequestDto.getRazorpay_payment_id());
+			orderHistory.setRazorpaySignature(paymentSuccessRequestDto.getRazorpay_signature());
+			System.out.println(orderHistory);
+			orderHistoryDao.save(orderHistory);
+			cartDao.delete(c);
+		}
+
+		return new ApiResponse(true, "Products successfully purchased..");
+	}
 }

@@ -1,5 +1,6 @@
 package com.weavewhisper.services.impl;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -13,12 +14,15 @@ import org.springframework.stereotype.Service;
 import com.weavewhisper.custom_exceptions.DuplicateBrandNameException;
 import com.weavewhisper.custom_exceptions.DuplicateEmailException;
 import com.weavewhisper.custom_exceptions.DuplicatePanNumberException;
+import com.weavewhisper.custom_exceptions.IllegalCancellationRequestException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
+import com.weavewhisper.dtos.ManufacturerChnageOrderStatusDto;
 import com.weavewhisper.dtos.ManufacturerSoldProductResponseDto;
 import com.weavewhisper.dtos.OrderHistoryResponseDto;
 import com.weavewhisper.dtos.ProductShortResponseDto;
 import com.weavewhisper.dtos.RegisterUserDto;
+import com.weavewhisper.entities.Customer;
 import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.OrderHistory;
 import com.weavewhisper.entities.Product;
@@ -141,6 +145,31 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		}
 
 		return resDtoList;
+	}
+
+	@Override
+	public ApiResponse changeSoldProductStatus(ManufacturerChnageOrderStatusDto manufacturerChnageOrderStatusDto) {
+
+		Product product = productDao.findById(manufacturerChnageOrderStatusDto.getProductId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such product exists with that id."));
+		Manufacturer manufacturer = manufacturerDao.findById(manufacturerChnageOrderStatusDto.getManufacturerId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
+		OrderHistory orderHistory = orderHistoryDao.findById(manufacturerChnageOrderStatusDto.getOrderId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such order exists with that id."));
+
+		if (orderHistoryDao.existsByIdAndProductRefAndManufacturer(manufacturerChnageOrderStatusDto.getOrderId(),
+				product, manufacturer)) {
+
+			orderHistory.setOrderStatus(manufacturerChnageOrderStatusDto.getOrderStatusType());
+
+			if (manufacturerChnageOrderStatusDto.getOrderStatusType().equals(OrderStatusType.DELIVERED)) {
+				orderHistory.setDeliveredAt(LocalDateTime.now());
+			}
+
+			return new ApiResponse(true, "Order status changed successfully.");
+		} else {
+			throw new ResourceNotFoundException("No order exists with that id.");
+		}
 	}
 
 }

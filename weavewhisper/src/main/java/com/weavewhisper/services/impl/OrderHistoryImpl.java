@@ -16,6 +16,7 @@ import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.OrderHistoryResponseDto;
 import com.weavewhisper.entities.Customer;
 import com.weavewhisper.entities.OrderHistory;
+import com.weavewhisper.enums.OrderReturnStatusType;
 import com.weavewhisper.enums.OrderStatusType;
 import com.weavewhisper.repositories.CustomerDao;
 import com.weavewhisper.repositories.OrderHistoryDao;
@@ -50,13 +51,14 @@ public class OrderHistoryImpl implements OrderHistoryService {
 			OrderHistory oHist = orderHistoryList.get(i);
 
 			OrderHistoryResponseDto oHistRes = modelMapper.map(oHist, OrderHistoryResponseDto.class);
-			
-			if(oHist.getProductRef().getManufacturer() != null) {
+
+			if (oHist.getProductRef().getManufacturer() != null) {
 				oHistRes.setBrandName(oHist.getProductRef().getManufacturer().getBrandName());
 			}
-			
-			if(oHist.getOrderStatus().equals(OrderStatusType.DELIVERED)) {
-				oHistRes.setDeliveryDate(oHist.getDeliveredAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+
+			if (oHist.getOrderStatus().equals(OrderStatusType.DELIVERED)) {
+				oHistRes.setDeliveryDate(
+						oHist.getDeliveredAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
 			}
 
 			oHistRes.setName(oHist.getProductRef().getName());
@@ -65,9 +67,10 @@ public class OrderHistoryImpl implements OrderHistoryService {
 			oHistRes.setProductId(oHist.getProductRef().getId());
 			oHistRes.setOrderDate(oHist.getCreatedAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
 
-			if(oHist.getOrderStatus().equals(OrderStatusType.DELIVERED)) {
+			if (oHist.getOrderStatus().equals(OrderStatusType.DELIVERED)) {
 				LocalDateTime returnExpDate = oHist.getDeliveredAt().plusDays(15);
-				if	(LocalDateTime.now().isBefore(returnExpDate)) {
+				if (LocalDateTime.now().isBefore(returnExpDate)
+						&& oHist.getReturnStatus().equals(OrderReturnStatusType.NOTREQUESTED)) {
 					oHistRes.setReturnAvailable(true);
 				} else {
 					oHistRes.setReturnAvailable(false);
@@ -75,9 +78,8 @@ public class OrderHistoryImpl implements OrderHistoryService {
 			} else {
 				oHistRes.setReturnAvailable(false);
 			}
-			
-			
-			System.out.println(oHistRes);
+
+//			System.out.println(oHistRes);
 
 			orderHistoryResList.add(oHistRes);
 		}

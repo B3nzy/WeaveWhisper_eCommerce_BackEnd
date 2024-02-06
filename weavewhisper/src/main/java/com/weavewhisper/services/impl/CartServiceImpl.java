@@ -246,6 +246,7 @@ public class CartServiceImpl implements CartService {
 			orderHistory.setRazorpaySignature(paymentSuccessRequestDto.getRazorpay_signature());
 			System.out.println(orderHistory);
 			orderHistoryDao.save(orderHistory);
+			orderHistory.getProductRef().setInventoryCount(orderHistory.getProductRef().getInventoryCount()-1);
 			cartDao.delete(c);
 		}
 

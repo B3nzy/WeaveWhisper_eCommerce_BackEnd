@@ -37,6 +37,10 @@ public class OrderHistory extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "product_id", nullable = false, unique = false)
 	private Product productRef;
+	
+	@ManyToOne
+	@JoinColumn(name = "manufacture_id")
+	private Manufacturer manufacturer;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)

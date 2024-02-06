@@ -226,6 +226,7 @@ public class CartServiceImpl implements CartService {
 				OrderHistory orderHistory = new OrderHistory();
 				orderHistory.setCustomerRef(customer);
 				orderHistory.setProductRef(c.getProductRef());
+				orderHistory.setManufacturer(c.getProductRef().getManufacturer());
 				orderHistory.setColor(c.getColor());
 				orderHistory.setSize(c.getSize());
 				orderHistory.setSoldAtPrice(c.getProductRef().getSellingPrice());

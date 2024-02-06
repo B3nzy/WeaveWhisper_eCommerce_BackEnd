@@ -8,10 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import com.razorpay.Refund;
 import com.weavewhisper.custom_exceptions.IllegalCancellationRequestException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
@@ -44,6 +49,12 @@ public class OrderHistoryImpl implements OrderHistoryService {
 
 	@Autowired
 	private ModelMapper modelMapper;
+
+	@Value("${razorpay.key_id}")
+	private String keyId;
+
+	@Value("${razorpay.key_secret}")
+	private String secret;
 
 	@Override
 	public List<OrderHistoryResponseDto> getOrderHistoryOfCustomer(Long customerId) {
@@ -109,7 +120,10 @@ public class OrderHistoryImpl implements OrderHistoryService {
 			if (orderHistory.getOrderStatus().equals(OrderStatusType.PROCESSING)) {
 				orderHistory.setOrderStatus(OrderStatusType.CANCELLED);
 				product.setInventoryCount(product.getInventoryCount() + 1);
-				return new ApiResponse(true, "Order cancelled successfully.");
+
+				customer.setBalance(customer.getBalance() + orderHistory.getSoldAtPrice());
+
+				return new ApiResponse(true, "Order cancelled successfully. Refund will be credited in your wallet.");
 			} else {
 				throw new IllegalCancellationRequestException(
 						"You can only cancel your oder if it is in processing stage.");

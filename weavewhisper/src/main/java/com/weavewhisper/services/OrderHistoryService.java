@@ -8,5 +8,6 @@ import com.weavewhisper.dtos.OrderHistoryResponseDto;
 
 public interface OrderHistoryService {
 	List<OrderHistoryResponseDto> getOrderHistoryOfCustomer(Long customerId);
+
 	ApiResponse cancelOrder(CancelOrderRequestDto cancelOrderRequestDto);
 }

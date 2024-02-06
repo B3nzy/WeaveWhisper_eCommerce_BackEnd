@@ -70,7 +70,5 @@ public class CartController {
 		ApiResponse apiResponse = cartService.handlePlaceOrderSuccess(paymentSuccessRequestDto);
 		return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
 	}
-	
-	// TODO need to create an api for place order failure.
 
 }

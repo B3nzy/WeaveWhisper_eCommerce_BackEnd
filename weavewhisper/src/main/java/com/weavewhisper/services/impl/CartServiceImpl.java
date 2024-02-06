@@ -13,7 +13,9 @@ import com.razorpay.Order;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import com.razorpay.Refund;
 import com.weavewhisper.custom_exceptions.IllegalCartItemException;
+import com.weavewhisper.custom_exceptions.PlaceOrderFailureException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.AddBalanceResponseDto;
 import com.weavewhisper.dtos.ApiResponse;
@@ -53,7 +55,7 @@ public class CartServiceImpl implements CartService {
 
 	@Autowired
 	private CustomerDao customerDao;
-	
+
 	@Autowired
 	private OrderHistoryDao orderHistoryDao;
 
@@ -198,58 +200,62 @@ public class CartServiceImpl implements CartService {
 	public ApiResponse handlePlaceOrderSuccess(PaymentSuccessRequestDto paymentSuccessRequestDto)
 			throws RazorpayException {
 
-		RazorpayClient razorpayClient = new RazorpayClient(keyId, secret);
+		try {
+			RazorpayClient razorpayClient = new RazorpayClient(keyId, secret);
 
-//		Order order = razorpayClient.orders.fetch(paymentSuccessRequestDto.getRazorpay_order_id());
-//		
-//		System.out.println(order);
+			Payment payment = razorpayClient.payments.fetch(paymentSuccessRequestDto.getRazorpay_payment_id());
+			System.out.println(payment);
 
-		Payment payment = razorpayClient.payments.fetch(paymentSuccessRequestDto.getRazorpay_payment_id());
-		System.out.println(payment);
+			int amount = payment.get("amount");
+			amount /= 100;
 
-		int amount = payment.get("amount");
-		amount /= 100;
+			JSONObject notes = payment.get("notes");
+			Long customerId = notes.getLong("id");
+			String customerEmail = notes.getString("email");
+			String reciept = notes.getString("reciept");
+			String phoneNumber = notes.getString("phoneNumber");
+			String address = notes.getString("address");
 
-//		notes.put("id", customer.getId());
-//		notes.put("email", customer.getEmail());
-//		notes.put("fullName", customer.getFullName());
-//		notes.put("reciept", reciept);
-//		notes.put("address", placeOrderRequestDto.getAddress());
-//		notes.put("phoneNumber", placeOrderRequestDto.getPhoneNumber());
-//		notes.put("cartIdList", cartIdList);
+			Customer customer = customerDao.findById(customerId)
+					.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
 
-		JSONObject notes = payment.get("notes");
-		Long customerId = notes.getLong("id");
-		String customerEmail = notes.getString("email");
-		String reciept = notes.getString("reciept");
-		String phoneNumber = notes.getString("phoneNumber");
-		String address = notes.getString("address");
+			List<Cart> cartList = cartDao.findByCustomerRef(customer);
 
-		Customer customer = customerDao.findById(customerId)
-				.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
+			for (int i = 0; i < cartList.size(); i++) {
+				Cart c = cartList.get(i);
+				OrderHistory orderHistory = new OrderHistory();
+				orderHistory.setCustomerRef(customer);
+				orderHistory.setProductRef(c.getProductRef());
+				orderHistory.setColor(c.getColor());
+				orderHistory.setSize(c.getSize());
+				orderHistory.setSoldAtPrice(c.getProductRef().getSellingPrice());
+				orderHistory.setPaymentType(PaymentType.RAZORPAY);
+				orderHistory.setAddress(address);
+				orderHistory.setPhoneNumber(phoneNumber);
+				orderHistory.setReceipt(reciept);
+				orderHistory.setRazorpayOrderId(paymentSuccessRequestDto.getRazorpay_order_id());
+				orderHistory.setRazorpayPaymentId(paymentSuccessRequestDto.getRazorpay_payment_id());
+				orderHistory.setRazorpaySignature(paymentSuccessRequestDto.getRazorpay_signature());
+				System.out.println(orderHistory);
+				orderHistoryDao.save(orderHistory);
+				orderHistory.getProductRef().setInventoryCount(orderHistory.getProductRef().getInventoryCount() - 1);
+				cartDao.delete(c);
 
-		List<Cart> cartList = cartDao.findByCustomerRef(customer);
+			}
+			return new ApiResponse(true, "Products successfully purchased..");
+		} catch (RazorpayException e) {
+			throw e;
+		} catch (RuntimeException e) {
+			RazorpayClient razorpayClient = new RazorpayClient(keyId, secret);
 
-		for(int i=0;i<cartList.size();i++) {
-			Cart c = cartList.get(i);
-			OrderHistory orderHistory = new OrderHistory();
-			orderHistory.setCustomerRef(customer);
-			orderHistory.setProductRef(c.getProductRef());
-			orderHistory.setColor(c.getColor());
-			orderHistory.setSize(c.getSize());
-			orderHistory.setPaymentType(PaymentType.RAZORPAY);
-			orderHistory.setAddress(address);
-			orderHistory.setPhoneNumber(phoneNumber);
-			orderHistory.setReceipt(reciept);
-			orderHistory.setRazorpayOrderId(paymentSuccessRequestDto.getRazorpay_order_id());
-			orderHistory.setRazorpayPaymentId(paymentSuccessRequestDto.getRazorpay_payment_id());
-			orderHistory.setRazorpaySignature(paymentSuccessRequestDto.getRazorpay_signature());
-			System.out.println(orderHistory);
-			orderHistoryDao.save(orderHistory);
-			orderHistory.getProductRef().setInventoryCount(orderHistory.getProductRef().getInventoryCount()-1);
-			cartDao.delete(c);
+			JSONObject refundRequest = new JSONObject();
+			refundRequest.put("payment_id", paymentSuccessRequestDto.getRazorpay_payment_id());
+			Refund refund = razorpayClient.payments.refund(refundRequest);
+
+			System.out.println(refund);
+			throw new PlaceOrderFailureException(
+					"Something went wrong. Any amount deducted from your account will get refunded withing 4-7 business days.");
 		}
 
-		return new ApiResponse(true, "Products successfully purchased..");
 	}
 }

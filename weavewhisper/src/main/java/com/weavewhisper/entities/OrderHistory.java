@@ -60,6 +60,9 @@ public class OrderHistory extends BaseEntity {
 
 	@Column(nullable = false)
 	private String address;
+	
+	@Column(nullable = false)
+	private double soldAtPrice;
 
 	@Column(nullable = false)
 	private String phoneNumber;

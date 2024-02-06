@@ -56,8 +56,18 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
 	}
 
+	@ExceptionHandler(PlaceOrderFailureException.class)
+	public ResponseEntity<?> handlePlaceOrderFailureException(PlaceOrderFailureException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+	}
+
 	@ExceptionHandler(IllegalCartItemException.class)
 	public ResponseEntity<?> handleIllegalCartItemException(IllegalCartItemException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+	}
+
+	@ExceptionHandler(IllegalCancellationRequestException.class)
+	public ResponseEntity<?> handleIllegalCancellationRequestException(IllegalCancellationRequestException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
 	}
 

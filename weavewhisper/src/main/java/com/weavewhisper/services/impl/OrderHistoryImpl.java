@@ -1,5 +1,9 @@
 package com.weavewhisper.services.impl;
 
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +16,7 @@ import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.OrderHistoryResponseDto;
 import com.weavewhisper.entities.Customer;
 import com.weavewhisper.entities.OrderHistory;
+import com.weavewhisper.enums.OrderStatusType;
 import com.weavewhisper.repositories.CustomerDao;
 import com.weavewhisper.repositories.OrderHistoryDao;
 import com.weavewhisper.services.OrderHistoryService;
@@ -45,12 +50,33 @@ public class OrderHistoryImpl implements OrderHistoryService {
 			OrderHistory oHist = orderHistoryList.get(i);
 
 			OrderHistoryResponseDto oHistRes = modelMapper.map(oHist, OrderHistoryResponseDto.class);
+			
+			if(oHist.getProductRef().getManufacturer() != null) {
+				oHistRes.setBrandName(oHist.getProductRef().getManufacturer().getBrandName());
+			}
+			
+			if(oHist.getOrderStatus().equals(OrderStatusType.DELIVERED)) {
+				oHistRes.setDeliveryDate(oHist.getDeliveredAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+			}
 
 			oHistRes.setName(oHist.getProductRef().getName());
 			oHistRes.setImageName(oHist.getProductRef().getImageList().get(0).getImageName());
 			oHistRes.setOrderHistoryId(oHist.getId());
 			oHistRes.setProductId(oHist.getProductRef().getId());
+			oHistRes.setOrderDate(oHist.getCreatedAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
 
+			if(oHist.getOrderStatus().equals(OrderStatusType.DELIVERED)) {
+				LocalDateTime returnExpDate = oHist.getDeliveredAt().plusDays(15);
+				if	(LocalDateTime.now().isBefore(returnExpDate)) {
+					oHistRes.setReturnAvailable(true);
+				} else {
+					oHistRes.setReturnAvailable(false);
+				}
+			} else {
+				oHistRes.setReturnAvailable(false);
+			}
+			
+			
 			System.out.println(oHistRes);
 
 			orderHistoryResList.add(oHistRes);

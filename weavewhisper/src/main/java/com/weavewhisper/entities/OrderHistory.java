@@ -3,6 +3,7 @@ package com.weavewhisper.entities;
 import java.time.LocalDateTime;
 
 import com.weavewhisper.enums.ColorType;
+import com.weavewhisper.enums.OrderReturnStatusType;
 import com.weavewhisper.enums.OrderStatusType;
 import com.weavewhisper.enums.PaymentType;
 import com.weavewhisper.enums.SizeType;
@@ -51,7 +52,11 @@ public class OrderHistory extends BaseEntity {
 	
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private OrderStatusType orderStatus = OrderStatusType.valueOf("PROCESSING");
+	private OrderStatusType orderStatus = OrderStatusType.PROCESSING;
+	
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private OrderReturnStatusType returnStatus = OrderReturnStatusType.NOTREQUESTED;
 
 	@Column(nullable = false)
 	private String address;
@@ -61,6 +66,8 @@ public class OrderHistory extends BaseEntity {
 	
 	@Column(nullable = false)
 	private String receipt;
+	
+	private LocalDateTime deliveredAt;
 
 	private String razorpayOrderId;
 

@@ -10,4 +10,6 @@ public interface OrderHistoryService {
 	List<OrderHistoryResponseDto> getOrderHistoryOfCustomer(Long customerId);
 
 	ApiResponse cancelOrder(CancelOrderRequestDto cancelOrderRequestDto);
+	
+	ApiResponse returnOrder(CancelOrderRequestDto returnOrderRequestDto);
 }

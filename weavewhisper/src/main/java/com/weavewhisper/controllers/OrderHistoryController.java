@@ -36,5 +36,11 @@ public class OrderHistoryController {
 		ApiResponse apiRes = orderHistoryService.cancelOrder(cancelOrderRequestDto);
 		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
 	}
+	
+	@PostMapping("/returnorder")
+	public ResponseEntity<?> handleReturnOrder(@RequestBody CancelOrderRequestDto returnOrderRequestDto) {
+		ApiResponse apiRes = orderHistoryService.returnOrder(returnOrderRequestDto);
+		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
+	}
 
 }

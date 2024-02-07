@@ -18,6 +18,7 @@ import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Refund;
 import com.weavewhisper.custom_exceptions.IllegalCancellationRequestException;
+import com.weavewhisper.custom_exceptions.IllegalStatusChangeException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.CancelOrderRequestDto;
@@ -135,4 +136,30 @@ public class OrderHistoryImpl implements OrderHistoryService {
 
 	}
 
+	@Override
+	public ApiResponse returnOrder(CancelOrderRequestDto returnOrderRequestDto) {
+
+		Product product = productDao.findById(returnOrderRequestDto.getProductId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such product exists with that id."));
+		Customer customer = customerDao.findById(returnOrderRequestDto.getCustomerId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
+		OrderHistory orderHistory = orderHistoryDao.findById(returnOrderRequestDto.getOrderId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such order exists with that id."));
+
+		if (orderHistoryDao.existsByIdAndProductRefAndCustomerRef(returnOrderRequestDto.getOrderId(), product,
+				customer)) {
+			if (orderHistory.getReturnStatus().equals(OrderReturnStatusType.NOTREQUESTED) && orderHistory.getOrderStatus().equals(OrderStatusType.DELIVERED) ) {
+
+				orderHistory.setReturnStatus(OrderReturnStatusType.REQUESTED);
+
+				return new ApiResponse(true, "Order return is requested successfully.");
+			} else {
+				throw new IllegalStatusChangeException(
+						"You can only return your oder if it is in delivered and not requested stage.");
+			}
+		} else {
+			throw new ResourceNotFoundException("No order exists with that id.");
+		}
+
+	}
 }

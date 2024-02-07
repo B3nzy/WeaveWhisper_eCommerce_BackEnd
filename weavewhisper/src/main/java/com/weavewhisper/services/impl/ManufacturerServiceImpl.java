@@ -161,9 +161,9 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		if (orderHistoryDao.existsByIdAndProductRefAndManufacturer(manufacturerChnageOrderStatusDto.getOrderId(),
 				product, manufacturer)) {
 
-			if (manufacturerChnageOrderStatusDto.getOrderStatusType().equals(OrderStatusType.DELIVERED)) {
+			if (orderHistory.getOrderStatus().equals(OrderStatusType.DELIVERED)) {
 				throw new IllegalStatusChangeException("Cant change status of delivered products.");
-			} else if (manufacturerChnageOrderStatusDto.getOrderStatusType().equals(OrderStatusType.CANCELLED)) {
+			} else if (orderHistory.getOrderStatus().equals(OrderStatusType.CANCELLED)) {
 				throw new IllegalStatusChangeException("Cant change status of cancelled products.");
 			} else {
 				orderHistory.setOrderStatus(manufacturerChnageOrderStatusDto.getOrderStatusType());

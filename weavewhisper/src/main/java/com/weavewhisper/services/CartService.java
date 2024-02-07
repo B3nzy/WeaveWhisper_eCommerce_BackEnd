@@ -24,4 +24,6 @@ public interface CartService {
 	PlaceOrderResponseDto handlePlaceOrderRequest(PlaceOrderRequestDto placeOrderRequestDto) throws RazorpayException;
 	
 	ApiResponse handlePlaceOrderSuccess(PaymentSuccessRequestDto paymentSuccessRequestDto) throws RazorpayException;
+	
+	ApiResponse handlePlaceOrderByWallet(PlaceOrderRequestDto placeOrderRequestDto);
 }

@@ -15,6 +15,7 @@ import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Refund;
 import com.weavewhisper.custom_exceptions.IllegalCartItemException;
+import com.weavewhisper.custom_exceptions.LowBalanceException;
 import com.weavewhisper.custom_exceptions.PlaceOrderFailureException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.AddBalanceResponseDto;
@@ -148,7 +149,7 @@ public class CartServiceImpl implements CartService {
 
 		double price = 0;
 
-		List<Long> cartIdList = new ArrayList<>();
+//		List<Long> cartIdList = new ArrayList<>();
 
 		for (int i = 0; i < cartList.size(); i++) {
 			Cart c = cartList.get(i);
@@ -158,9 +159,8 @@ public class CartServiceImpl implements CartService {
 				throw new IllegalCartItemException("Some product from your cart is already sold out.");
 			}
 			price += c.getProductRef().getSellingPrice();
-			cartIdList.add(c.getId());
+//			cartIdList.add(c.getId());
 		}
-		;
 
 		JSONObject orderRequest = new JSONObject();
 		orderRequest.put("amount", price * 100);
@@ -256,6 +256,59 @@ public class CartServiceImpl implements CartService {
 			System.out.println(refund);
 			throw new PlaceOrderFailureException(
 					"Something went wrong. Any amount deducted from your account will get refunded withing 4-7 business days.");
+		}
+
+	}
+
+	@Override
+	public ApiResponse handlePlaceOrderByWallet(PlaceOrderRequestDto placeOrderRequestDto) {
+
+		Customer customer = customerDao.findById(placeOrderRequestDto.getCustomerId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
+
+		String reciept = "order#" + System.currentTimeMillis();
+
+		List<Cart> cartList = cartDao.findByCustomerRef(customer);
+
+		double price = 0;
+
+		for (int i = 0; i < cartList.size(); i++) {
+			Cart c = cartList.get(i);
+			if (c.getProductRef().getManufacturer() == null) {
+				throw new IllegalCartItemException("Some product from your cart doesnt exists anymore.");
+			} else if (c.getProductRef().getInventoryCount() == 0) {
+				throw new IllegalCartItemException("Some product from your cart is already sold out.");
+			}
+			price += c.getProductRef().getSellingPrice();
+		}
+
+		if (customer.getBalance() >= price) {
+			String phoneNumber = placeOrderRequestDto.getPhoneNumber();
+			String address = placeOrderRequestDto.getAddress();
+
+			for (int i = 0; i < cartList.size(); i++) {
+				Cart c = cartList.get(i);
+				OrderHistory orderHistory = new OrderHistory();
+				orderHistory.setCustomerRef(customer);
+				orderHistory.setProductRef(c.getProductRef());
+				orderHistory.setManufacturer(c.getProductRef().getManufacturer());
+				orderHistory.setColor(c.getColor());
+				orderHistory.setSize(c.getSize());
+				orderHistory.setSoldAtPrice(c.getProductRef().getSellingPrice());
+				orderHistory.setPaymentType(PaymentType.WALLET);
+				orderHistory.setAddress(address);
+				orderHistory.setPhoneNumber(phoneNumber);
+				orderHistory.setReceipt(reciept);
+				System.out.println(orderHistory);
+				orderHistoryDao.save(orderHistory);
+				orderHistory.getProductRef().setInventoryCount(orderHistory.getProductRef().getInventoryCount() - 1);
+				cartDao.delete(c);
+
+			}
+			customer.setBalance(customer.getBalance() - price);
+			return new ApiResponse(true, "Products successfully purchased..");
+		} else {
+			throw new LowBalanceException("Insufficient wallet balance.");
 		}
 
 	}

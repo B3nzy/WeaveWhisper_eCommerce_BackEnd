@@ -105,7 +105,7 @@ public class WalletServiceImpl implements WalletService {
 		
 		customer.setBalance(customer.getBalance()+amount);
 
-		return new ApiResponse(true, "Amount successfully added to your account.");
+		return new ApiResponse(true, "Amount successfully added to your wallet.");
 	}
 
 	@Override

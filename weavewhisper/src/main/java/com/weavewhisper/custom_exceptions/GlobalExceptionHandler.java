@@ -76,6 +76,11 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
 	}
 
+	@ExceptionHandler(LowBalanceException.class)
+	public ResponseEntity<?> handleLowBalanceException(LowBalanceException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+	}
+
 	@ExceptionHandler(RazorpayException.class)
 	public ResponseEntity<?> handleRazorpayException(RazorpayException e) {
 		System.out.println(e);

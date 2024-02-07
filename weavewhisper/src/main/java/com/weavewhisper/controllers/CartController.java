@@ -70,5 +70,11 @@ public class CartController {
 		ApiResponse apiResponse = cartService.handlePlaceOrderSuccess(paymentSuccessRequestDto);
 		return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
 	}
+	
+	@PostMapping("/placeorderbywallet")
+	public ResponseEntity<?> handlePlaceOrderByWalletRequest(@RequestBody PlaceOrderRequestDto placeOrderRequestDto) throws RazorpayException{
+		ApiResponse apiResponse = cartService.handlePlaceOrderByWallet(placeOrderRequestDto);
+		return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+	}
 
 }

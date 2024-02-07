@@ -15,6 +15,7 @@ import com.weavewhisper.custom_exceptions.DuplicateBrandNameException;
 import com.weavewhisper.custom_exceptions.DuplicateEmailException;
 import com.weavewhisper.custom_exceptions.DuplicatePanNumberException;
 import com.weavewhisper.custom_exceptions.IllegalCancellationRequestException;
+import com.weavewhisper.custom_exceptions.IllegalStatusChangeException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ManufacturerChnageOrderStatusDto;
@@ -160,13 +161,20 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		if (orderHistoryDao.existsByIdAndProductRefAndManufacturer(manufacturerChnageOrderStatusDto.getOrderId(),
 				product, manufacturer)) {
 
-			orderHistory.setOrderStatus(manufacturerChnageOrderStatusDto.getOrderStatusType());
-
 			if (manufacturerChnageOrderStatusDto.getOrderStatusType().equals(OrderStatusType.DELIVERED)) {
-				orderHistory.setDeliveredAt(LocalDateTime.now());
+				throw new IllegalStatusChangeException("Cant change status of delivered products.");
+			} else if (manufacturerChnageOrderStatusDto.getOrderStatusType().equals(OrderStatusType.CANCELLED)) {
+				throw new IllegalStatusChangeException("Cant change status of cancelled products.");
+			} else {
+				orderHistory.setOrderStatus(manufacturerChnageOrderStatusDto.getOrderStatusType());
+
+				if (manufacturerChnageOrderStatusDto.getOrderStatusType().equals(OrderStatusType.DELIVERED)) {
+					orderHistory.setDeliveredAt(LocalDateTime.now());
+				}
+
+				return new ApiResponse(true, "Order status changed successfully.");
 			}
 
-			return new ApiResponse(true, "Order status changed successfully.");
 		} else {
 			throw new ResourceNotFoundException("No order exists with that id.");
 		}

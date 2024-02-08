@@ -1,5 +1,6 @@
 package com.weavewhisper.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -8,12 +9,15 @@ import org.springframework.stereotype.Service;
 
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
-import com.weavewhisper.dtos.UserResponseDto;
 import com.weavewhisper.dtos.admindtos.AdminLoginRequestDto;
 import com.weavewhisper.dtos.admindtos.AdminLoginResponseDto;
 import com.weavewhisper.dtos.admindtos.AdminRegistrationRequestDto;
+import com.weavewhisper.dtos.admindtos.RequestedManufacturerRegistrationResponseDto;
 import com.weavewhisper.entities.BaseUser;
+import com.weavewhisper.entities.Manufacturer;
+import com.weavewhisper.enums.ManufacturerAccountStatusType;
 import com.weavewhisper.enums.UserType;
+import com.weavewhisper.repositories.ManufacturerDao;
 import com.weavewhisper.repositories.UserDao;
 import com.weavewhisper.services.AdminService;
 
@@ -25,6 +29,9 @@ public class AdminServiceImpl implements AdminService {
 
 	@Autowired
 	private UserDao userDao;
+
+	@Autowired
+	private ManufacturerDao manufacturerDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -53,8 +60,15 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	public List<?> getRequestedManufacturerRegistration() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Manufacturer> manufacturerList = manufacturerDao
+				.findByAccountStatus(ManufacturerAccountStatusType.REQUESTED);
+		List<RequestedManufacturerRegistrationResponseDto> reqManufacturerListDto = new ArrayList<>();
+		for (int i = 0; i < manufacturerList.size(); i++) {
+			Manufacturer manufacturer = manufacturerList.get(i);
+			reqManufacturerListDto
+					.add(modelMapper.map(manufacturer, RequestedManufacturerRegistrationResponseDto.class));
+		}
+		return reqManufacturerListDto;
 	}
 
 }

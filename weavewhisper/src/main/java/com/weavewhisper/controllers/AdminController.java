@@ -1,5 +1,7 @@
 package com.weavewhisper.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -22,6 +24,12 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
+	
+	@PostMapping("/register")
+	public ResponseEntity<?> registerAdmin(@RequestBody AdminRegistrationRequestDto adminRegistrationRequestDto) {
+		ApiResponse apiResp = adminService.register(adminRegistrationRequestDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(apiResp);
+	}
 
 	@PostMapping("/login")
 	public ResponseEntity<?> loginAdmin(@RequestBody AdminLoginRequestDto adminLoginRequestDto) {
@@ -29,16 +37,11 @@ public class AdminController {
 		return ResponseEntity.status(HttpStatus.OK).body(adminLoginResponseDto);
 	}
 
-	@PostMapping("/register")
-	public ResponseEntity<?> registerAdmin(@RequestBody AdminRegistrationRequestDto adminRegistrationRequestDto) {
-		ApiResponse apiResp = adminService.register(adminRegistrationRequestDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(apiResp);
-	}
 
 	@GetMapping("/getrequestedmanufacturerregistration")
 	public ResponseEntity<?> getRequestedManufacturerRegistration() {
-
-		return null;
+		List<?> reqManufacturerList = adminService.getRequestedManufacturerRegistration();
+		return ResponseEntity.status(HttpStatus.OK).body(reqManufacturerList);
 	}
 
 }

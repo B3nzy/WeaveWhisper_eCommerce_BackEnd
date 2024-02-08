@@ -12,6 +12,7 @@ import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.admindtos.AdminLoginRequestDto;
 import com.weavewhisper.dtos.admindtos.AdminLoginResponseDto;
 import com.weavewhisper.dtos.admindtos.AdminRegistrationRequestDto;
+import com.weavewhisper.dtos.admindtos.ManufacturerChangeAccountStatusRequestDto;
 import com.weavewhisper.dtos.admindtos.RequestedManufacturerRegistrationResponseDto;
 import com.weavewhisper.entities.BaseUser;
 import com.weavewhisper.entities.Manufacturer;
@@ -69,6 +70,17 @@ public class AdminServiceImpl implements AdminService {
 					.add(modelMapper.map(manufacturer, RequestedManufacturerRegistrationResponseDto.class));
 		}
 		return reqManufacturerListDto;
+	}
+
+	@Override
+	public ApiResponse changeManufacturerAccountStatus(
+			ManufacturerChangeAccountStatusRequestDto manufacturerChangeAccountStatusRequestDto) {
+		Manufacturer manufacturer = manufacturerDao
+				.findById(manufacturerChangeAccountStatusRequestDto.getManufacturerId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such manufacturer exists with that id."));
+
+		manufacturer.setAccountStatus(manufacturerChangeAccountStatusRequestDto.getAccountStatus());
+		return new ApiResponse(true, "Successfully changed manufacturer account status.");
 	}
 
 }

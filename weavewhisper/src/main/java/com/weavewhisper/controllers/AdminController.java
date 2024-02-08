@@ -16,6 +16,7 @@ import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.admindtos.AdminLoginRequestDto;
 import com.weavewhisper.dtos.admindtos.AdminLoginResponseDto;
 import com.weavewhisper.dtos.admindtos.AdminRegistrationRequestDto;
+import com.weavewhisper.dtos.admindtos.ManufacturerChangeAccountStatusRequestDto;
 import com.weavewhisper.services.AdminService;
 
 @RestController
@@ -24,7 +25,7 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
-	
+
 	@PostMapping("/register")
 	public ResponseEntity<?> registerAdmin(@RequestBody AdminRegistrationRequestDto adminRegistrationRequestDto) {
 		ApiResponse apiResp = adminService.register(adminRegistrationRequestDto);
@@ -37,11 +38,16 @@ public class AdminController {
 		return ResponseEntity.status(HttpStatus.OK).body(adminLoginResponseDto);
 	}
 
-
 	@GetMapping("/getrequestedmanufacturerregistration")
 	public ResponseEntity<?> getRequestedManufacturerRegistration() {
 		List<?> reqManufacturerList = adminService.getRequestedManufacturerRegistration();
 		return ResponseEntity.status(HttpStatus.OK).body(reqManufacturerList);
 	}
 
+	@PostMapping("/changemanufactureraccountstatus")
+	public ResponseEntity<?> handleChangeManufacturerAccountStatus(
+			@RequestBody ManufacturerChangeAccountStatusRequestDto manufacturerChangeAccountStatusRequestDto) {
+		ApiResponse apiRes = adminService.changeManufacturerAccountStatus(manufacturerChangeAccountStatusRequestDto);
+		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
+	}
 }

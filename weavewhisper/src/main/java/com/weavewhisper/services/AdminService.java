@@ -6,6 +6,7 @@ import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.admindtos.AdminLoginRequestDto;
 import com.weavewhisper.dtos.admindtos.AdminLoginResponseDto;
 import com.weavewhisper.dtos.admindtos.AdminRegistrationRequestDto;
+import com.weavewhisper.dtos.admindtos.ManufacturerChangeAccountStatusRequestDto;
 
 public interface AdminService {
 	AdminLoginResponseDto login(AdminLoginRequestDto adminLoginRequestDto);
@@ -13,4 +14,7 @@ public interface AdminService {
 	ApiResponse register(AdminRegistrationRequestDto adminRegistrationRequestDto);
 
 	List<?> getRequestedManufacturerRegistration();
+
+	ApiResponse changeManufacturerAccountStatus(
+			ManufacturerChangeAccountStatusRequestDto manufacturerChangeAccountStatusRequestDto);
 }

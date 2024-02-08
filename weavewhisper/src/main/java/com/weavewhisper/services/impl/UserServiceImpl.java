@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
 				Manufacturer manufacturer = manufacturerDao.findById(user.getId())
 						.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
 				if (manufacturer.getAccountStatus().equals(ManufacturerAccountStatusType.REQUESTED)) {
-					throw new AccountVerificationException("Your account verification is process, please wait!");
+					throw new AccountVerificationException("Your account is under verification.");
 				} else if (manufacturer.getAccountStatus().equals(ManufacturerAccountStatusType.REJECTED)) {
 					throw new AccountVerificationException("Your account verification is rejected.");
 				}
@@ -65,5 +65,4 @@ public class UserServiceImpl implements UserService {
 		}
 
 	}
-
 }

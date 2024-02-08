@@ -27,15 +27,10 @@ public class Customer extends BaseUser {
 	private String phoneNumber;
 	private String address;
 
-	private double balance = 0;
-	
+	@Column(nullable = false)
+	private boolean verified = false;
 
-	public Customer(String email, String password, UserType type, String fullName, String phoneNumber,
-			String address) {
-		super(email, password, type);
-		this.fullName = fullName;
-		this.phoneNumber = phoneNumber;
-		this.address = address;
-	}
+	@Column(nullable = false)
+	private double balance = 0;
 
 }

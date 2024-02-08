@@ -32,16 +32,4 @@ public class BaseUser extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private UserType type;
 
-	private boolean verified;
-
-	public BaseUser(String email, String password, UserType type) {
-		super();
-		this.email = email;
-		this.password = password;
-		this.type = type;
-		// Need to change default verified value to false
-		this.verified = true;
-		
-	}
-
 }

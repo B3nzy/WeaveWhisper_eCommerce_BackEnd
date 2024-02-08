@@ -31,6 +31,11 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
 	}
 
+	@ExceptionHandler(AccountVerificationException.class)
+	public ResponseEntity<?> handleAccountVerificationException(AccountVerificationException e) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, e.getMessage()));
+	}
+
 	@ExceptionHandler(AmazonS3Exception.class)
 	public ResponseEntity<?> handleAmazonS3Exception(AmazonS3Exception e) {
 		return ResponseEntity.status(e.getStatusCode()).body(new ApiResponse(false, e.getErrorMessage()));

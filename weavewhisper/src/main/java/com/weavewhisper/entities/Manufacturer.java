@@ -3,6 +3,7 @@ package com.weavewhisper.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.weavewhisper.enums.ManufacturerAccountStatusType;
 import com.weavewhisper.enums.UserType;
 
 import jakarta.persistence.CascadeType;
@@ -18,7 +19,7 @@ import lombok.ToString;
 
 @PrimaryKeyJoinColumn(name = "user_id")
 @Entity
-@Table(name = "manufaturers")
+@Table(name = "manufacturers")
 @Getter
 @Setter
 @ToString(callSuper = true, exclude = {})
@@ -29,20 +30,17 @@ public class Manufacturer extends BaseUser {
 	@Column(length = 10, nullable = false, unique = true)
 	private String panNumber;
 
+	@Column(nullable = false)
+	private ManufacturerAccountStatusType accountStatus = ManufacturerAccountStatusType.REQUESTED;
+
 	@OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL)
 	List<Product> productList = new ArrayList<>();
 
-	public Manufacturer(String email, String password, UserType type, String brandName, String panNumber) {
-		super(email, password, type);
-		this.brandName = brandName;
-		this.panNumber = panNumber;
-	}
-	
 	public void addProduct(Product product) {
 		productList.add(product);
 		product.setManufacturer(this);
 	}
-	
+
 	public void removeProduct(Product product) {
 		product.setInventoryCount(0);
 		product.setManufacturer(null);

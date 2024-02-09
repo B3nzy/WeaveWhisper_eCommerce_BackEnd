@@ -3,9 +3,11 @@ package com.weavewhisper.services.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.InvalidIsolationLevelException;
 
 import com.weavewhisper.custom_exceptions.AccountVerificationException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
+import com.weavewhisper.custom_exceptions.UnauthorizedException;
 import com.weavewhisper.dtos.AuthDto;
 import com.weavewhisper.dtos.UserResponseDto;
 import com.weavewhisper.entities.BaseUser;
@@ -44,7 +46,7 @@ public class UserServiceImpl implements UserService {
 	public UserResponseDto loginUser(AuthDto authDto) {
 		BaseUser user = userDao.findByEmailAndPassword(authDto.getEmail(), authDto.getPassword());
 
-		if (user != null) {
+		if (user != null) {			
 			UserResponseDto userResponseDto = modelMapper.map(user, UserResponseDto.class);
 			if (userResponseDto.getType().equals(UserType.CUSTOMER)) {
 				Customer customer = customerDao.findById(userResponseDto.getId())

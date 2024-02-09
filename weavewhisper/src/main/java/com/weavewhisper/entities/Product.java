@@ -19,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -58,6 +59,7 @@ public class Product extends BaseEntity {
 	@Column(nullable = false)
 	private Double sellingPrice;
 	@Column(nullable = false)
+	@Min(0)
 	private int inventoryCount;
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)

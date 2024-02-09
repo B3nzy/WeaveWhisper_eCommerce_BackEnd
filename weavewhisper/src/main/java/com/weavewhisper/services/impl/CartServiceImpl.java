@@ -239,6 +239,9 @@ public class CartServiceImpl implements CartService {
 				orderHistory.setRazorpaySignature(paymentSuccessRequestDto.getRazorpay_signature());
 				System.out.println(orderHistory);
 				orderHistoryDao.save(orderHistory);
+				if(orderHistory.getProductRef().getInventoryCount() == 0) {
+					throw new IllegalCartItemException("You are trying to buy an item which is no longer avaiable");
+				}
 				orderHistory.getProductRef().setInventoryCount(orderHistory.getProductRef().getInventoryCount() - 1);
 				cartDao.delete(c);
 

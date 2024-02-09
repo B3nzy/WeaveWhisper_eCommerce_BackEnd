@@ -103,7 +103,7 @@ public class WalletServiceImpl implements WalletService {
 		Customer customer = customerDao.findById(customerId)
 				.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
 		
-		customer.setBalance(customer.getBalance()+amount);
+		customer.setBalance(customer.getBalance()+amount*1.05);
 
 		return new ApiResponse(true, "Amount successfully added to your wallet.");
 	}

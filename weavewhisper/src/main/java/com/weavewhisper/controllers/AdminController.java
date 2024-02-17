@@ -18,6 +18,8 @@ import com.weavewhisper.dtos.admindtos.AdminLoginResponseDto;
 import com.weavewhisper.dtos.admindtos.AdminRegistrationRequestDto;
 import com.weavewhisper.dtos.admindtos.ManufacturerChangeAccountStatusRequestDto;
 import com.weavewhisper.services.AdminService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/admin")
@@ -50,4 +52,11 @@ public class AdminController {
 		ApiResponse apiRes = adminService.changeManufacturerAccountStatus(manufacturerChangeAccountStatusRequestDto);
 		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
 	}
+	
+	@GetMapping("/getallmanufacturers")
+	public ResponseEntity<?> getAllManufacturers() {
+		List<?> manufacturerList = adminService.getAllManufacturers();
+		return ResponseEntity.status(HttpStatus.OK).body(manufacturerList);
+	}
+	
 }

@@ -2,6 +2,7 @@ package com.weavewhisper.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,20 @@ public class AdminServiceImpl implements AdminService {
 
 		manufacturer.setAccountStatus(manufacturerChangeAccountStatusRequestDto.getAccountStatus());
 		return new ApiResponse(true, "Successfully changed manufacturer account status.");
+	}
+
+	@Override
+	public List<?> getAllManufacturers() {
+		List<Manufacturer> manufacturerList = manufacturerDao
+				.findByAccountStatus(ManufacturerAccountStatusType.ACCEPTED).stream()
+				.sorted((m1,m2)->(-1)* m1.getCreatedAt().compareTo(m2.getCreatedAt())).collect(Collectors.toList());
+		List<RequestedManufacturerRegistrationResponseDto> reqManufacturerListDto = new ArrayList<>();
+		for (int i = 0; i < manufacturerList.size(); i++) {
+			Manufacturer manufacturer = manufacturerList.get(i);
+			reqManufacturerListDto
+					.add(modelMapper.map(manufacturer, RequestedManufacturerRegistrationResponseDto.class));
+		}
+		return reqManufacturerListDto;
 	}
 
 }

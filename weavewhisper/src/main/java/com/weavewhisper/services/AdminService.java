@@ -17,4 +17,6 @@ public interface AdminService {
 
 	ApiResponse changeManufacturerAccountStatus(
 			ManufacturerChangeAccountStatusRequestDto manufacturerChangeAccountStatusRequestDto);
+	
+	List<?> getAllManufacturers();
 }

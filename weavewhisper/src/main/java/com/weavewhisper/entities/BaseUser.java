@@ -1,5 +1,7 @@
 package com.weavewhisper.entities;
 
+import java.time.LocalDateTime;
+
 import com.weavewhisper.enums.UserType;
 
 import jakarta.persistence.Column;
@@ -24,6 +26,9 @@ import lombok.ToString;
 @Entity
 @Table(name = "users")
 public class BaseUser extends BaseEntity {
+
+	private LocalDateTime createdAt = LocalDateTime.now();
+
 	@Column(length = 50, nullable = false, unique = true)
 	private String email;
 	@Column(length = 20, nullable = false)

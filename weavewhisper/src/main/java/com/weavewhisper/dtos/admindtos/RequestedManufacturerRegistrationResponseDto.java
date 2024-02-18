@@ -10,6 +10,7 @@ import lombok.ToString;
 public class RequestedManufacturerRegistrationResponseDto {
 	private Long id;
 	private String email;
+	private String createdDate;
 	private String brandName;
 	private String panNumber;
 }

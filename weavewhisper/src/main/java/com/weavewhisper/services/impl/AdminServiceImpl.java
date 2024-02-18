@@ -1,9 +1,12 @@
 package com.weavewhisper.services.impl;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.joda.time.DateTime;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,8 +71,10 @@ public class AdminServiceImpl implements AdminService {
 		List<RequestedManufacturerRegistrationResponseDto> reqManufacturerListDto = new ArrayList<>();
 		for (int i = 0; i < manufacturerList.size(); i++) {
 			Manufacturer manufacturer = manufacturerList.get(i);
-			reqManufacturerListDto
-					.add(modelMapper.map(manufacturer, RequestedManufacturerRegistrationResponseDto.class));
+			RequestedManufacturerRegistrationResponseDto resDto = modelMapper.map(manufacturer,
+					RequestedManufacturerRegistrationResponseDto.class);
+			resDto.setCreatedDate(manufacturer.getCreatedAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+			reqManufacturerListDto.add(resDto);
 		}
 		return reqManufacturerListDto;
 	}
@@ -93,8 +98,10 @@ public class AdminServiceImpl implements AdminService {
 		List<RequestedManufacturerRegistrationResponseDto> reqManufacturerListDto = new ArrayList<>();
 		for (int i = 0; i < manufacturerList.size(); i++) {
 			Manufacturer manufacturer = manufacturerList.get(i);
-			reqManufacturerListDto
-					.add(modelMapper.map(manufacturer, RequestedManufacturerRegistrationResponseDto.class));
+			RequestedManufacturerRegistrationResponseDto resDto = modelMapper.map(manufacturer,
+					RequestedManufacturerRegistrationResponseDto.class);
+			resDto.setCreatedDate(manufacturer.getCreatedAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+			reqManufacturerListDto.add(resDto);
 		}
 		return reqManufacturerListDto;
 	}

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
+import com.weavewhisper.dtos.AdminHomePageResponseDto;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.admindtos.AdminLoginRequestDto;
 import com.weavewhisper.dtos.admindtos.AdminLoginResponseDto;
@@ -88,7 +89,7 @@ public class AdminServiceImpl implements AdminService {
 	public List<?> getAllManufacturers() {
 		List<Manufacturer> manufacturerList = manufacturerDao
 				.findByAccountStatus(ManufacturerAccountStatusType.ACCEPTED).stream()
-				.sorted((m1,m2)->(-1)* m1.getCreatedAt().compareTo(m2.getCreatedAt())).collect(Collectors.toList());
+				.sorted((m1, m2) -> (-1) * m1.getCreatedAt().compareTo(m2.getCreatedAt())).collect(Collectors.toList());
 		List<RequestedManufacturerRegistrationResponseDto> reqManufacturerListDto = new ArrayList<>();
 		for (int i = 0; i < manufacturerList.size(); i++) {
 			Manufacturer manufacturer = manufacturerList.get(i);
@@ -96,6 +97,21 @@ public class AdminServiceImpl implements AdminService {
 					.add(modelMapper.map(manufacturer, RequestedManufacturerRegistrationResponseDto.class));
 		}
 		return reqManufacturerListDto;
+	}
+
+	@Override
+	public AdminHomePageResponseDto getHomePageDetails() {
+		List<Manufacturer> manufacturerList = manufacturerDao.findAll();
+		long requestedManufacturerCount = manufacturerList.stream()
+				.filter(m -> m.getAccountStatus().equals(ManufacturerAccountStatusType.REQUESTED)).count();
+		long activeManufacturerCount = manufacturerList.stream()
+				.filter(m -> m.getAccountStatus().equals(ManufacturerAccountStatusType.ACCEPTED)).count();
+
+		AdminHomePageResponseDto resDto = new AdminHomePageResponseDto();
+		resDto.setSuccess(true);
+		resDto.setRequestedManufacturerCount(requestedManufacturerCount);
+		resDto.setActiveManufacturerCount(activeManufacturerCount);
+		return resDto;
 	}
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.weavewhisper.dtos.AdminHomePageResponseDto;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.admindtos.AdminLoginRequestDto;
 import com.weavewhisper.dtos.admindtos.AdminLoginResponseDto;
@@ -19,7 +20,6 @@ import com.weavewhisper.dtos.admindtos.AdminRegistrationRequestDto;
 import com.weavewhisper.dtos.admindtos.ManufacturerChangeAccountStatusRequestDto;
 import com.weavewhisper.services.AdminService;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/api/admin")
@@ -40,6 +40,12 @@ public class AdminController {
 		return ResponseEntity.status(HttpStatus.OK).body(adminLoginResponseDto);
 	}
 
+	@GetMapping("/gethomepagedetails")
+	public ResponseEntity<?> getHomePageDetails() {
+		AdminHomePageResponseDto resDto = adminService.getHomePageDetails();
+		return ResponseEntity.status(HttpStatus.OK).body(resDto);
+	}
+
 	@GetMapping("/getrequestedmanufacturerregistration")
 	public ResponseEntity<?> getRequestedManufacturerRegistration() {
 		List<?> reqManufacturerList = adminService.getRequestedManufacturerRegistration();
@@ -52,11 +58,11 @@ public class AdminController {
 		ApiResponse apiRes = adminService.changeManufacturerAccountStatus(manufacturerChangeAccountStatusRequestDto);
 		return ResponseEntity.status(HttpStatus.OK).body(apiRes);
 	}
-	
+
 	@GetMapping("/getallmanufacturers")
 	public ResponseEntity<?> getAllManufacturers() {
 		List<?> manufacturerList = adminService.getAllManufacturers();
 		return ResponseEntity.status(HttpStatus.OK).body(manufacturerList);
 	}
-	
+
 }

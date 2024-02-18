@@ -2,6 +2,7 @@ package com.weavewhisper.services;
 
 import java.util.List;
 
+import com.weavewhisper.dtos.AdminHomePageResponseDto;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.admindtos.AdminLoginRequestDto;
 import com.weavewhisper.dtos.admindtos.AdminLoginResponseDto;
@@ -19,4 +20,6 @@ public interface AdminService {
 			ManufacturerChangeAccountStatusRequestDto manufacturerChangeAccountStatusRequestDto);
 	
 	List<?> getAllManufacturers();
+	
+	AdminHomePageResponseDto getHomePageDetails();
 }

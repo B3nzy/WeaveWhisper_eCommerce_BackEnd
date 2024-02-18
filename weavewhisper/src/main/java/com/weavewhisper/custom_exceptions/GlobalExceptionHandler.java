@@ -66,6 +66,16 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
 	}
 
+	@ExceptionHandler(DuplicateBrandNameException.class)
+	public ResponseEntity<?> handleDuplicateBrandNameException(DuplicateBrandNameException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+	}
+
+	@ExceptionHandler(DuplicatePanNumberException.class)
+	public ResponseEntity<?> handleDuplicatePanNumberException(DuplicatePanNumberException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+	}
+
 	@ExceptionHandler(IllegalCartItemException.class)
 	public ResponseEntity<?> handleIllegalCartItemException(IllegalCartItemException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));

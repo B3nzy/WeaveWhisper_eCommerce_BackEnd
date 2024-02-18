@@ -25,6 +25,8 @@ public class ManufacturerSoldProductResponseDto {
 
 	private SizeType size;
 
+	private String receipt;
+	
 	private OrderStatusType orderStatus;
 
 	private String address;

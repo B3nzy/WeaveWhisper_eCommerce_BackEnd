@@ -1,3 +1,9 @@
+/*
+ * 
+ * This project WeaveWhisper is a collaborative effort between Sumit Mandal and Alangkrita Sarkar.
+ * 
+ */
+
 package com.weavewhisper;
 
 import org.modelmapper.Conditions;

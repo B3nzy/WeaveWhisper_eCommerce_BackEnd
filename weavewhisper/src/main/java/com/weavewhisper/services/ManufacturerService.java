@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ManufacturerChnageOrderStatusDto;
+import com.weavewhisper.dtos.ManufacturerChnageReturnStatusDto;
 import com.weavewhisper.dtos.ManufacturerSoldProductResponseDto;
 import com.weavewhisper.dtos.ProductShortResponseDto;
 import com.weavewhisper.dtos.RegisterUserDto;
@@ -21,5 +22,9 @@ public interface ManufacturerService {
 
 	List<ManufacturerSoldProductResponseDto> getAllSoldProducts(Long manufacturerId);
 
+	List<ManufacturerSoldProductResponseDto> getReturnProducts(Long manufacturerId);
+
 	ApiResponse changeSoldProductStatus(ManufacturerChnageOrderStatusDto manufacturerChnageOrderStatusDto);
+	
+	ApiResponse changeReturnProductStatus(ManufacturerChnageReturnStatusDto manufacturerChnageReturnStatusDto);
 }

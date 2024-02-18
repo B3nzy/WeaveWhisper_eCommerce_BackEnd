@@ -19,6 +19,7 @@ import com.weavewhisper.custom_exceptions.IllegalStatusChangeException;
 import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ManufacturerChnageOrderStatusDto;
+import com.weavewhisper.dtos.ManufacturerChnageReturnStatusDto;
 import com.weavewhisper.dtos.ManufacturerSoldProductResponseDto;
 import com.weavewhisper.dtos.OrderHistoryResponseDto;
 import com.weavewhisper.dtos.ProductShortResponseDto;
@@ -27,6 +28,7 @@ import com.weavewhisper.entities.Customer;
 import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.OrderHistory;
 import com.weavewhisper.entities.Product;
+import com.weavewhisper.enums.OrderReturnStatusType;
 import com.weavewhisper.enums.OrderStatusType;
 import com.weavewhisper.repositories.ManufacturerDao;
 import com.weavewhisper.repositories.OrderHistoryDao;
@@ -128,13 +130,13 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		for (int i = 0; i < orderHistoryList.size(); i++) {
 			OrderHistory oHist = orderHistoryList.get(i);
 
-			ManufacturerSoldProductResponseDto resDto = modelMapper.map(oHist,
-					ManufacturerSoldProductResponseDto.class);
-
 			if (oHist.getOrderStatus().equals(OrderStatusType.DELIVERED)
 					|| oHist.getOrderStatus().equals(OrderStatusType.CANCELLED)) {
 				continue;
 			}
+
+			ManufacturerSoldProductResponseDto resDto = modelMapper.map(oHist,
+					ManufacturerSoldProductResponseDto.class);
 
 			resDto.setImageName(oHist.getProductRef().getImageList().get(0).getImageName());
 			resDto.setOrderHistoryId(oHist.getId());
@@ -175,6 +177,64 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 				return new ApiResponse(true, "Order status changed successfully.");
 			}
 
+		} else {
+			throw new ResourceNotFoundException("No order exists with that id.");
+		}
+	}
+
+	@Override
+	public List<ManufacturerSoldProductResponseDto> getReturnProducts(Long manufacturerId) {
+		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No Manufacturer found with that id"));
+
+		List<OrderHistory> orderHistoryList = orderHistoryDao.findByManufacturer(manufacturer);
+
+		List<ManufacturerSoldProductResponseDto> resDtoList = new ArrayList<>();
+
+		for (int i = 0; i < orderHistoryList.size(); i++) {
+			OrderHistory oHist = orderHistoryList.get(i);
+
+			if (oHist.getOrderStatus().equals(OrderStatusType.DELIVERED)
+					&& oHist.getReturnStatus().equals(OrderReturnStatusType.REQUESTED)) {
+				ManufacturerSoldProductResponseDto resDto = modelMapper.map(oHist,
+						ManufacturerSoldProductResponseDto.class);
+
+				resDto.setImageName(oHist.getProductRef().getImageList().get(0).getImageName());
+				resDto.setOrderHistoryId(oHist.getId());
+				resDto.setProductId(oHist.getProductRef().getId());
+				resDto.setOrderDate(oHist.getCreatedAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+
+				resDtoList.add(resDto);
+
+			} else {
+				continue;
+			}
+
+		}
+
+		return resDtoList;
+	}
+
+	@Override
+	public ApiResponse changeReturnProductStatus(ManufacturerChnageReturnStatusDto manufacturerChnageReturnStatusDto) {
+		Product product = productDao.findById(manufacturerChnageReturnStatusDto.getProductId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such product exists with that id."));
+		Manufacturer manufacturer = manufacturerDao.findById(manufacturerChnageReturnStatusDto.getManufacturerId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
+		OrderHistory orderHistory = orderHistoryDao.findById(manufacturerChnageReturnStatusDto.getOrderId())
+				.orElseThrow(() -> new ResourceNotFoundException("No such order exists with that id."));
+
+		if (orderHistoryDao.existsByIdAndProductRefAndManufacturer(manufacturerChnageReturnStatusDto.getOrderId(),
+				product, manufacturer)) {
+
+			if(orderHistory.getOrderStatus().equals(OrderStatusType.DELIVERED)&&orderHistory.getReturnStatus().equals(OrderReturnStatusType.REQUESTED)) {
+				orderHistory.setReturnStatus(OrderReturnStatusType.RETURNED);
+				orderHistory.getCustomerRef().setBalance(orderHistory.getCustomerRef().getBalance() + orderHistory.getSoldAtPrice());
+				return new ApiResponse(true, "Return status changed successfully.");
+			} else {
+				throw new IllegalStatusChangeException("Cant change  return status of un-delivered and un-requested products."); 
+			}
+			
 		} else {
 			throw new ResourceNotFoundException("No order exists with that id.");
 		}

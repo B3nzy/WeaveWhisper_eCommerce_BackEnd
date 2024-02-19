@@ -24,6 +24,8 @@ public class ManufacturerSoldProductResponseDto {
 	private ColorType color;
 
 	private SizeType size;
+	
+	private String name;
 
 	private String receipt;
 	

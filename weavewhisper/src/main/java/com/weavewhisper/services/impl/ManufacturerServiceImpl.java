@@ -142,6 +142,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 			resDto.setOrderHistoryId(oHist.getId());
 			resDto.setProductId(oHist.getProductRef().getId());
 			resDto.setOrderDate(oHist.getCreatedAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+			resDto.setName(oHist.getProductRef().getName());
 
 			resDtoList.add(resDto);
 
@@ -203,7 +204,8 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 				resDto.setOrderHistoryId(oHist.getId());
 				resDto.setProductId(oHist.getProductRef().getId());
 				resDto.setOrderDate(oHist.getCreatedAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
-
+				resDto.setName(oHist.getProductRef().getName());
+				
 				resDtoList.add(resDto);
 
 			} else {

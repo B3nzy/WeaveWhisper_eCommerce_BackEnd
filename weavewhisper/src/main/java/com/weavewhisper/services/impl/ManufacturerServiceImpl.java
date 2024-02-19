@@ -278,7 +278,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
 		long mensListing = manufacturer.getProductList().stream().filter(p -> p.getGender().equals(GenderType.MEN))
 				.count();
-		resDto.setMensListing(mensListing);
+		resDto.setMenListing(mensListing);
 
 		long womenListing = manufacturer.getProductList().stream().filter(p -> p.getGender().equals(GenderType.WOMEN))
 				.count();

@@ -15,7 +15,7 @@ public class ManufacturerHomepageResponseDto {
 	private long productsSold;
 	private long productsReturned;
 
-	private long mensListing;
+	private long menListing;
 	private long womenListing;
 	
 	private long trackingSoldProductsCount;

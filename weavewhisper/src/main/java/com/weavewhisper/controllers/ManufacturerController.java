@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ManufacturerChnageOrderStatusDto;
 import com.weavewhisper.dtos.ManufacturerChnageReturnStatusDto;
+import com.weavewhisper.dtos.ManufacturerHomepageResponseDto;
 import com.weavewhisper.dtos.ManufacturerSoldProductResponseDto;
 import com.weavewhisper.services.ManufacturerService;
 
@@ -24,6 +25,12 @@ public class ManufacturerController {
 
 	@Autowired
 	private ManufacturerService manufacturerService;
+	
+	@GetMapping("/dashboard/home/{manufacturerId}")
+	public ResponseEntity<?> getHomepageDetails(@PathVariable Long manufacturerId) {
+		ManufacturerHomepageResponseDto resDto = manufacturerService.getHomepageDetails(manufacturerId);
+		return ResponseEntity.status(HttpStatus.OK).body(resDto);
+	}
 
 	@GetMapping("/dashboard/getorders/{manufacturerId}")
 	public ResponseEntity<?> getUndeliveredOrders(@PathVariable Long manufacturerId) {

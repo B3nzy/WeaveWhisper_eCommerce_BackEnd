@@ -20,6 +20,7 @@ import com.weavewhisper.custom_exceptions.ResourceNotFoundException;
 import com.weavewhisper.dtos.ApiResponse;
 import com.weavewhisper.dtos.ManufacturerChnageOrderStatusDto;
 import com.weavewhisper.dtos.ManufacturerChnageReturnStatusDto;
+import com.weavewhisper.dtos.ManufacturerHomepageResponseDto;
 import com.weavewhisper.dtos.ManufacturerSoldProductResponseDto;
 import com.weavewhisper.dtos.OrderHistoryResponseDto;
 import com.weavewhisper.dtos.ProductShortResponseDto;
@@ -28,6 +29,7 @@ import com.weavewhisper.entities.Customer;
 import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.OrderHistory;
 import com.weavewhisper.entities.Product;
+import com.weavewhisper.enums.GenderType;
 import com.weavewhisper.enums.OrderReturnStatusType;
 import com.weavewhisper.enums.OrderStatusType;
 import com.weavewhisper.repositories.ManufacturerDao;
@@ -205,7 +207,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 				resDto.setProductId(oHist.getProductRef().getId());
 				resDto.setOrderDate(oHist.getCreatedAt().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
 				resDto.setName(oHist.getProductRef().getName());
-				
+
 				resDtoList.add(resDto);
 
 			} else {
@@ -229,17 +231,72 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		if (orderHistoryDao.existsByIdAndProductRefAndManufacturer(manufacturerChnageReturnStatusDto.getOrderId(),
 				product, manufacturer)) {
 
-			if(orderHistory.getOrderStatus().equals(OrderStatusType.DELIVERED)&&orderHistory.getReturnStatus().equals(OrderReturnStatusType.REQUESTED)) {
+			if (orderHistory.getOrderStatus().equals(OrderStatusType.DELIVERED)
+					&& orderHistory.getReturnStatus().equals(OrderReturnStatusType.REQUESTED)) {
 				orderHistory.setReturnStatus(OrderReturnStatusType.RETURNED);
-				orderHistory.getCustomerRef().setBalance(orderHistory.getCustomerRef().getBalance() + orderHistory.getSoldAtPrice());
+				orderHistory.getCustomerRef()
+						.setBalance(orderHistory.getCustomerRef().getBalance() + orderHistory.getSoldAtPrice());
 				return new ApiResponse(true, "Return status changed successfully.");
 			} else {
-				throw new IllegalStatusChangeException("Cant change  return status of un-delivered and un-requested products."); 
+				throw new IllegalStatusChangeException(
+						"Cant change  return status of un-delivered and un-requested products.");
 			}
-			
+
 		} else {
 			throw new ResourceNotFoundException("No order exists with that id.");
 		}
+	}
+
+	@Override
+	public ManufacturerHomepageResponseDto getHomepageDetails(Long manucaturerId) {
+
+		Manufacturer manufacturer = manufacturerDao.findById(manucaturerId)
+				.orElseThrow(() -> new ResourceNotFoundException("No such customer exists with that id."));
+		List<OrderHistory> orderHistoryList = orderHistoryDao.findByManufacturer(manufacturer);
+
+		ManufacturerHomepageResponseDto resDto = new ManufacturerHomepageResponseDto();
+
+		double totalEarning = orderHistoryList.stream()
+				.filter((o) -> o.getCreatedAt().getMonth().equals(LocalDateTime.now().getMonth()))
+				.filter(o -> o.getReturnStatus().equals(OrderReturnStatusType.NOTREQUESTED))
+				.filter(o -> !o.getOrderStatus().equals(OrderStatusType.CANCELLED)).mapToDouble(o -> o.getSoldAtPrice())
+				.sum();
+		resDto.setTotalEarning(totalEarning);
+
+		long productsSold = orderHistoryList.stream()
+				.filter(o -> o.getReturnStatus().equals(OrderReturnStatusType.NOTREQUESTED))
+				.filter(o -> !o.getOrderStatus().equals(OrderStatusType.CANCELLED)).count();
+		resDto.setProductsSold(productsSold);
+
+		long productsReturned = orderHistoryList.stream()
+				.filter(o -> !o.getReturnStatus().equals(OrderReturnStatusType.NOTREQUESTED)).count();
+		resDto.setProductsReturned(productsReturned);
+
+		long productsTotalCurrentStock = manufacturer.getProductList().stream().mapToInt(p -> p.getInventoryCount())
+				.sum();
+		resDto.setProductsTotalCurrentStock(productsTotalCurrentStock);
+
+		long mensListing = manufacturer.getProductList().stream().filter(p -> p.getGender().equals(GenderType.MEN))
+				.count();
+		resDto.setMensListing(mensListing);
+
+		long womenListing = manufacturer.getProductList().stream().filter(p -> p.getGender().equals(GenderType.WOMEN))
+				.count();
+		resDto.setWomenListing(womenListing);
+
+		long trackingSoldProductsCount = orderHistoryList.stream()
+				.filter(o -> o.getReturnStatus().equals(OrderReturnStatusType.NOTREQUESTED))
+				.filter(o -> !o.getOrderStatus().equals(OrderStatusType.CANCELLED))
+				.filter(o -> !o.getOrderStatus().equals(OrderStatusType.DELIVERED)).count();
+		resDto.setTrackingSoldProductsCount(trackingSoldProductsCount);
+
+		long returnedProductsCount = orderHistoryList.stream()
+				.filter(o -> !o.getReturnStatus().equals(OrderReturnStatusType.NOTREQUESTED))
+				.filter(o -> !o.getReturnStatus().equals(OrderReturnStatusType.RETURNED))
+				.filter(o -> o.getOrderStatus().equals(OrderStatusType.DELIVERED)).count();
+		resDto.setReturnedProductsCount(returnedProductsCount);
+
+		return resDto;
 	}
 
 }

@@ -11,6 +11,7 @@ import com.weavewhisper.custom_exceptions.UnauthorizedException;
 import com.weavewhisper.dtos.RegisterUserDto;
 import com.weavewhisper.dtos.UserResponseDto;
 import com.weavewhisper.entities.Customer;
+import com.weavewhisper.repositories.CartDao;
 import com.weavewhisper.repositories.CustomerDao;
 import com.weavewhisper.repositories.UserDao;
 import com.weavewhisper.services.CustomerService;
@@ -29,6 +30,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	private UserDao userDao;
+	
+	@Autowired
+	private CartDao cartDao;
 
 	@Value("${balance.starting-balance}")
 	private double firstTimeRegisterOffer;
@@ -57,6 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
 			System.out.println(newCustomer);
 			Customer savedCustomer = customerDao.save(newCustomer);
 			UserResponseDto userResponseDto = modelMapper.map(savedCustomer, UserResponseDto.class);
+			userResponseDto.setCartCount(cartDao.findByCustomerRef(customer).size());
 			return (userResponseDto);
 
 		} else {

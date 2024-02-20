@@ -30,6 +30,7 @@ import com.weavewhisper.entities.Manufacturer;
 import com.weavewhisper.entities.OrderHistory;
 import com.weavewhisper.entities.Product;
 import com.weavewhisper.enums.GenderType;
+import com.weavewhisper.enums.ManufacturerAccountStatusType;
 import com.weavewhisper.enums.OrderReturnStatusType;
 import com.weavewhisper.enums.OrderStatusType;
 import com.weavewhisper.repositories.ManufacturerDao;
@@ -89,6 +90,13 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 		Manufacturer manufacturer = manufacturerDao.findById(manufacturerId)
 				.orElseThrow(() -> new ResourceNotFoundException("No Manufacturer found with that id"));
 
+		List<OrderHistory> orderList = orderHistoryDao.findByManufacturer(manufacturer);
+		for (int i = 0; i < orderList.size(); i++) {
+			OrderHistory order = orderList.get(i);
+
+			order.deleteManufacturer();
+		}
+
 		manufacturerDao.deleteById(manufacturerId);
 		return new ApiResponse(true, "Manufacturer deleted successfully!");
 	}
@@ -113,9 +121,9 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 	public List<String> getAllManufacturerBrandNames() {
 
 		List<Manufacturer> manufacturerList = manufacturerDao.findAll();
-		List<String> manufacturerBrandNameList = manufacturerList.stream().map(m -> m.getBrandName())
-				.collect(Collectors.toList());
-
+		List<String> manufacturerBrandNameList = manufacturerList.stream()
+				.filter(m -> m.getAccountStatus().equals(ManufacturerAccountStatusType.ACCEPTED))
+				.map(m -> m.getBrandName()).collect(Collectors.toList());
 		return manufacturerBrandNameList;
 	}
 

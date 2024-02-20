@@ -26,4 +26,5 @@ public class RegisterUserDto {
 	private String address;
 	private String brandName;
 	private String panNumber;
+	private double balance;
 }

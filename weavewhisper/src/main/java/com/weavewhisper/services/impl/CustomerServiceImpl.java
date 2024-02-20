@@ -57,6 +57,7 @@ public class CustomerServiceImpl implements CustomerService {
 				.orElseThrow(() -> new ResourceNotFoundException("No such user found with that id"));
 		if (customer.getPassword().equals(user.getPassword())) {
 			Customer newCustomer = modelMapper.map(user, Customer.class);
+			System.out.println(newCustomer);
 			newCustomer.setId(user.getUserId());
 			System.out.println(newCustomer);
 			Customer savedCustomer = customerDao.save(newCustomer);

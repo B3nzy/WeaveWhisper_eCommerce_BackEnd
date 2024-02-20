@@ -81,4 +81,8 @@ public class OrderHistory extends BaseEntity {
 	private String razorpayPaymentId;
 
 	private String razorpaySignature;
+	
+	public void deleteManufacturer() {
+		this.setManufacturer(null);
+	}
 }
